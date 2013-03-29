@@ -3,7 +3,7 @@ package gamerules
 import . "chunkymonkey/types"
 
 func makeVoidAspect() (aspect IBlockAspect) {
-	return &VoidAspect{}
+    return &VoidAspect{}
 }
 
 // Behaviour of a "void" block which has no behaviour.
@@ -13,16 +13,16 @@ func (aspect *VoidAspect) setAttrs(blockAttrs *BlockAttrs) {
 }
 
 func (aspect *VoidAspect) Name() string {
-	return "Void"
+    return "Void"
 }
 
 func (aspect *VoidAspect) Check() error {
-	return nil
+    return nil
 }
 
 func (aspect *VoidAspect) Hit(instance *BlockInstance, player IPlayerClient, digStatus DigStatus) (destroyed bool) {
-	destroyed = false
-	return
+    destroyed = false
+    return
 }
 
 func (aspect *VoidAspect) Interact(instance *BlockInstance, player IPlayerClient) {
@@ -38,5 +38,5 @@ func (aspect *VoidAspect) Destroy(instance *BlockInstance) {
 }
 
 func (aspect *VoidAspect) Tick(instance *BlockInstance) bool {
-	return false
+    return false
 }

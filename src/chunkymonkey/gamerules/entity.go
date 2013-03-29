@@ -4,63 +4,63 @@
 package gamerules
 
 import (
-	"chunkymonkey/physics"
-	"chunkymonkey/proto"
-	. "chunkymonkey/types"
-	"nbt"
+    "chunkymonkey/physics"
+    "chunkymonkey/proto"
+    . "chunkymonkey/types"
+    "nbt"
 )
 
 // INbtSerializable is the interface for all objects that can be serialized to
 // NBT data structures for persistency.
 type INbtSerializable interface {
-	// UnmarshalNbt reads the NBT tag to set the state of the object.
-	UnmarshalNbt(nbt.Compound) error
+    // UnmarshalNbt reads the NBT tag to set the state of the object.
+    UnmarshalNbt(nbt.Compound) error
 
-	// MarshalNbt creates an NBT tag representing the entity. This can be nil if
-	// the entity cannot be serialized.
-	MarshalNbt(nbt.Compound) error
+    // MarshalNbt creates an NBT tag representing the entity. This can be nil if
+    // the entity cannot be serialized.
+    MarshalNbt(nbt.Compound) error
 }
 
 // IEntity represents common elements to all types of non-block entities that
 // can be present in a chunk.
 type IEntity interface {
-	// Returns the entity's ID.
-	GetEntityId() EntityId
+    // Returns the entity's ID.
+    GetEntityId() EntityId
 
-	// SpawnPackets appends and returns the packets required to tell a client
-	// about the existance and current state of the entity.
-	SpawnPackets([]proto.IPacket) []proto.IPacket
+    // SpawnPackets appends and returns the packets required to tell a client
+    // about the existance and current state of the entity.
+    SpawnPackets([]proto.IPacket) []proto.IPacket
 
-	// SendUpdate appends and returns the packets required to tell a client about
-	// the new state of the entity since the last SendUpdate or SendSpawn.
-	UpdatePackets([]proto.IPacket) []proto.IPacket
+    // SendUpdate appends and returns the packets required to tell a client about
+    // the new state of the entity since the last SendUpdate or SendSpawn.
+    UpdatePackets([]proto.IPacket) []proto.IPacket
 
-	// Returns the entity's current position.
-	Position() *AbsXyz
+    // Returns the entity's current position.
+    Position() *AbsXyz
 }
 
 // INonPlayerEntity is the interface for entities other than players which are
 // controlled server-side.
 type INonPlayerEntity interface {
-	IEntity
-	INbtSerializable
+    IEntity
+    INbtSerializable
 
-	// Sets the entity's ID.
-	SetEntityId(EntityId)
+    // Sets the entity's ID.
+    SetEntityId(EntityId)
 
-	// Runs the physics for the entity for a single server tick.
-	Tick(physics.IBlockQuerier) (leftBlock bool)
+    // Runs the physics for the entity for a single server tick.
+    Tick(physics.IBlockQuerier) (leftBlock bool)
 }
 
 // ITileEntity is the interface common to entities that are tile-based.
 type ITileEntity interface {
-	INbtSerializable
+    INbtSerializable
 
-	// SetChunk sets the parent chunk of the tile entity. This must be called
-	// after the tile entity is deserialized and before any game event methods
-	// are called.
-	SetChunk(chunk IChunkBlock)
+    // SetChunk sets the parent chunk of the tile entity. This must be called
+    // after the tile entity is deserialized and before any game event methods
+    // are called.
+    SetChunk(chunk IChunkBlock)
 
-	// Block returns the position of the tile entity.
-	Block() BlockXyz
+    // Block returns the position of the tile entity.
+    Block() BlockXyz
 }

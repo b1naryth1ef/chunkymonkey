@@ -1,43 +1,43 @@
 package gamerules
 
 import (
-	"encoding/json"
-	"io"
-	"os"
-	"strconv"
+    "encoding/json"
+    "io"
+    "os"
+    "strconv"
 
-	. "chunkymonkey/types"
+    . "chunkymonkey/types"
 )
 
 func LoadItemDefs(reader io.Reader) (items ItemTypeMap, err error) {
-	itemsStr := make(map[string]*ItemType)
-	decoder := json.NewDecoder(reader)
-	err = decoder.Decode(&itemsStr)
+    itemsStr := make(map[string]*ItemType)
+    decoder := json.NewDecoder(reader)
+    err = decoder.Decode(&itemsStr)
 
-	// Convert map string keys to ints.
-	items = make(ItemTypeMap)
-	for idStr, item := range itemsStr {
-		var id int
-		id, err = strconv.Atoi(idStr)
+    // Convert map string keys to ints.
+    items = make(ItemTypeMap)
+    for idStr, item := range itemsStr {
+        var id int
+        id, err = strconv.Atoi(idStr)
 
-		if err != nil {
-			return
-		}
+        if err != nil {
+            return
+        }
 
-		item.Id = ItemTypeId(id)
+        item.Id = ItemTypeId(id)
 
-		items[ItemTypeId(id)] = itemsStr[idStr]
-	}
+        items[ItemTypeId(id)] = itemsStr[idStr]
+    }
 
-	return
+    return
 }
 
 func LoadItemTypesFromFile(filename string) (items ItemTypeMap, err error) {
-	file, err := os.Open(filename)
-	if err != nil {
-		return
-	}
-	defer file.Close()
+    file, err := os.Open(filename)
+    if err != nil {
+        return
+    }
+    defer file.Close()
 
-	return LoadItemDefs(file)
+    return LoadItemDefs(file)
 }

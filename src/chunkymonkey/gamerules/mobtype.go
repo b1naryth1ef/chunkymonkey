@@ -1,32 +1,32 @@
 package gamerules
 
 import (
-	. "chunkymonkey/types"
+    . "chunkymonkey/types"
 )
 
 type MobType struct {
-	Id   EntityMobType
-	Name string
+    Id   EntityMobType
+    Name string
 }
 
 type MobTypeMap map[EntityMobType]*MobType
 
 // Used for protocol parsing.
 var Mobs = MobTypeMap{
-	MobTypeIdCreeper:      &CreeperType,
-	MobTypeIdSkeleton:     &SkeletonType,
-	MobTypeIdSpider:       &SpiderType,
-	MobTypeIdGiantZombie:  &GiantZombieType,
-	MobTypeIdZombie:       &ZombieType,
-	MobTypeIdSlime:        &SlimeType,
-	MobTypeIdGhast:        &GhastType,
-	MobTypeIdZombiePigman: &ZombiePigmanType,
-	MobTypeIdPig:          &PigType,
-	MobTypeIdSheep:        &SheepType,
-	MobTypeIdCow:          &CowType,
-	MobTypeIdHen:          &HenType,
-	MobTypeIdSquid:        &SquidType,
-	MobTypeIdWolf:         &WolfType,
+    MobTypeIdCreeper:      &CreeperType,
+    MobTypeIdSkeleton:     &SkeletonType,
+    MobTypeIdSpider:       &SpiderType,
+    MobTypeIdGiantZombie:  &GiantZombieType,
+    MobTypeIdZombie:       &ZombieType,
+    MobTypeIdSlime:        &SlimeType,
+    MobTypeIdGhast:        &GhastType,
+    MobTypeIdZombiePigman: &ZombiePigmanType,
+    MobTypeIdPig:          &PigType,
+    MobTypeIdSheep:        &SheepType,
+    MobTypeIdCow:          &CowType,
+    MobTypeIdHen:          &HenType,
+    MobTypeIdSquid:        &SquidType,
+    MobTypeIdWolf:         &WolfType,
 }
 
 var CreeperType = MobType{MobTypeIdCreeper, "creeper"}

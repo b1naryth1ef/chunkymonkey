@@ -29,520 +29,520 @@
 package nbt
 
 import (
-	"encoding/binary"
-	"errors"
-	"fmt"
-	"io"
-	"strings"
+    "encoding/binary"
+    "errors"
+    "fmt"
+    "io"
+    "strings"
 )
 
 // ITag is the interface for all tags that can be represented in an NBT tree.
 type ITag interface {
-	String() string
-	Type() TagType
-	Read(io.Reader) error
-	Write(io.Writer) error
-	Lookup(path string) ITag
+    String() string
+    Type() TagType
+    Read(io.Reader) error
+    Write(io.Writer) error
+    Lookup(path string) ITag
 }
 
 // TagType is the header byte value that identifies the type of tag(s).
 type TagType byte
 
 const (
-	// Tag types. All these values can be used to create a new tag, except
-	// TagEnd.
-	TagEnd       = TagType(0)
-	TagByte      = TagType(1)
-	TagShort     = TagType(2)
-	TagInt       = TagType(3)
-	TagLong      = TagType(4)
-	TagFloat     = TagType(5)
-	TagDouble    = TagType(6)
-	TagByteArray = TagType(7)
-	TagString    = TagType(8)
-	TagList      = TagType(9)
-	TagCompound  = TagType(10)
+    // Tag types. All these values can be used to create a new tag, except
+    // TagEnd.
+    TagEnd       = TagType(0)
+    TagByte      = TagType(1)
+    TagShort     = TagType(2)
+    TagInt       = TagType(3)
+    TagLong      = TagType(4)
+    TagFloat     = TagType(5)
+    TagDouble    = TagType(6)
+    TagByteArray = TagType(7)
+    TagString    = TagType(8)
+    TagList      = TagType(9)
+    TagCompound  = TagType(10)
 )
 
 // NewTag creates a new tag of the given TagType. TagEnd is not a valid value
 // here.
 func (tt TagType) NewTag() (tag ITag, err error) {
-	switch tt {
-	case TagByte:
-		tag = new(Byte)
-	case TagShort:
-		tag = new(Short)
-	case TagInt:
-		tag = new(Int)
-	case TagLong:
-		tag = new(Long)
-	case TagFloat:
-		tag = new(Float)
-	case TagDouble:
-		tag = new(Double)
-	case TagByteArray:
-		tag = new(ByteArray)
-	case TagString:
-		tag = new(String)
-	case TagList:
-		tag = new(List)
-	case TagCompound:
-		tag = make(Compound)
-	default:
-		err = fmt.Errorf("invalid NBT tag type %#x", tt)
-	}
-	return
+    switch tt {
+    case TagByte:
+        tag = new(Byte)
+    case TagShort:
+        tag = new(Short)
+    case TagInt:
+        tag = new(Int)
+    case TagLong:
+        tag = new(Long)
+    case TagFloat:
+        tag = new(Float)
+    case TagDouble:
+        tag = new(Double)
+    case TagByteArray:
+        tag = new(ByteArray)
+    case TagString:
+        tag = new(String)
+    case TagList:
+        tag = new(List)
+    case TagCompound:
+        tag = make(Compound)
+    default:
+        err = fmt.Errorf("invalid NBT tag type %#x", tt)
+    }
+    return
 }
 
 func (tt *TagType) read(reader io.Reader) error {
-	return binary.Read(reader, binary.BigEndian, tt)
+    return binary.Read(reader, binary.BigEndian, tt)
 }
 
 func (tt TagType) write(writer io.Writer) error {
-	return binary.Write(writer, binary.BigEndian, tt)
+    return binary.Write(writer, binary.BigEndian, tt)
 }
 
 type Byte struct {
-	Value int8
+    Value int8
 }
 
 func (b *Byte) String() string {
-	return fmt.Sprintf("Byte(%d)", b.Value)
+    return fmt.Sprintf("Byte(%d)", b.Value)
 }
 
 func (*Byte) Type() TagType {
-	return TagByte
+    return TagByte
 }
 
 func (*Byte) Lookup(path string) ITag {
-	return nil
+    return nil
 }
 
 func (b *Byte) Read(reader io.Reader) (err error) {
-	return binary.Read(reader, binary.BigEndian, &b.Value)
+    return binary.Read(reader, binary.BigEndian, &b.Value)
 }
 
 func (b *Byte) Write(writer io.Writer) (err error) {
-	return binary.Write(writer, binary.BigEndian, &b.Value)
+    return binary.Write(writer, binary.BigEndian, &b.Value)
 }
 
 type Short struct {
-	Value int16
+    Value int16
 }
 
 func (s *Short) String() string {
-	return fmt.Sprintf("Short(%d)", s.Value)
+    return fmt.Sprintf("Short(%d)", s.Value)
 }
 
 func (*Short) Type() TagType {
-	return TagShort
+    return TagShort
 }
 
 func (s *Short) Read(reader io.Reader) (err error) {
-	return binary.Read(reader, binary.BigEndian, &s.Value)
+    return binary.Read(reader, binary.BigEndian, &s.Value)
 }
 
 func (s *Short) Write(writer io.Writer) (err error) {
-	return binary.Write(writer, binary.BigEndian, &s.Value)
+    return binary.Write(writer, binary.BigEndian, &s.Value)
 }
 
 func (*Short) Lookup(path string) ITag {
-	return nil
+    return nil
 }
 
 type Int struct {
-	Value int32
+    Value int32
 }
 
 func (i *Int) String() string {
-	return fmt.Sprintf("Int(%d)", i.Value)
+    return fmt.Sprintf("Int(%d)", i.Value)
 }
 
 func (*Int) Type() TagType {
-	return TagInt
+    return TagInt
 }
 
 func (i *Int) Read(reader io.Reader) (err error) {
-	return binary.Read(reader, binary.BigEndian, &i.Value)
+    return binary.Read(reader, binary.BigEndian, &i.Value)
 }
 
 func (i *Int) Write(writer io.Writer) (err error) {
-	return binary.Write(writer, binary.BigEndian, &i.Value)
+    return binary.Write(writer, binary.BigEndian, &i.Value)
 }
 
 func (*Int) Lookup(path string) ITag {
-	return nil
+    return nil
 }
 
 type Long struct {
-	Value int64
+    Value int64
 }
 
 func (l *Long) String() string {
-	return fmt.Sprintf("Long(%d)", l.Value)
+    return fmt.Sprintf("Long(%d)", l.Value)
 }
 
 func (*Long) Type() TagType {
-	return TagLong
+    return TagLong
 }
 
 func (l *Long) Read(reader io.Reader) (err error) {
-	return binary.Read(reader, binary.BigEndian, &l.Value)
+    return binary.Read(reader, binary.BigEndian, &l.Value)
 }
 
 func (l *Long) Write(writer io.Writer) (err error) {
-	return binary.Write(writer, binary.BigEndian, &l.Value)
+    return binary.Write(writer, binary.BigEndian, &l.Value)
 }
 
 func (*Long) Lookup(path string) ITag {
-	return nil
+    return nil
 }
 
 type Float struct {
-	Value float32
+    Value float32
 }
 
 func (f *Float) String() string {
-	return fmt.Sprintf("Float(%f)", f.Value)
+    return fmt.Sprintf("Float(%f)", f.Value)
 }
 
 func (*Float) Type() TagType {
-	return TagFloat
+    return TagFloat
 }
 
 func (f *Float) Read(reader io.Reader) (err error) {
-	return binary.Read(reader, binary.BigEndian, &f.Value)
+    return binary.Read(reader, binary.BigEndian, &f.Value)
 }
 
 func (f *Float) Write(writer io.Writer) (err error) {
-	return binary.Write(writer, binary.BigEndian, &f.Value)
+    return binary.Write(writer, binary.BigEndian, &f.Value)
 }
 
 func (*Float) Lookup(path string) ITag {
-	return nil
+    return nil
 }
 
 type Double struct {
-	Value float64
+    Value float64
 }
 
 func (d *Double) String() string {
-	return fmt.Sprintf("Double(%f)", d.Value)
+    return fmt.Sprintf("Double(%f)", d.Value)
 }
 
 func (*Double) Type() TagType {
-	return TagDouble
+    return TagDouble
 }
 
 func (d *Double) Read(reader io.Reader) (err error) {
-	return binary.Read(reader, binary.BigEndian, &d.Value)
+    return binary.Read(reader, binary.BigEndian, &d.Value)
 }
 
 func (d *Double) Write(writer io.Writer) (err error) {
-	return binary.Write(writer, binary.BigEndian, &d.Value)
+    return binary.Write(writer, binary.BigEndian, &d.Value)
 }
 
 func (*Double) Lookup(path string) ITag {
-	return nil
+    return nil
 }
 
 type ByteArray struct {
-	Value []byte
+    Value []byte
 }
 
 func (b *ByteArray) String() string {
-	return fmt.Sprintf("ByteArray(%x)", b.Value)
+    return fmt.Sprintf("ByteArray(%x)", b.Value)
 }
 
 func (*ByteArray) Type() TagType {
-	return TagByteArray
+    return TagByteArray
 }
 
 func (b *ByteArray) Read(reader io.Reader) (err error) {
-	var length Int
+    var length Int
 
-	err = length.Read(reader)
-	if err != nil {
-		return
-	}
+    err = length.Read(reader)
+    if err != nil {
+        return
+    }
 
-	bs := make([]byte, length.Value)
-	_, err = io.ReadFull(reader, bs)
-	if err != nil {
-		return
-	}
+    bs := make([]byte, length.Value)
+    _, err = io.ReadFull(reader, bs)
+    if err != nil {
+        return
+    }
 
-	b.Value = bs
-	return
+    b.Value = bs
+    return
 }
 
 func (b *ByteArray) Write(writer io.Writer) (err error) {
-	length := Int{int32(len(b.Value))}
+    length := Int{int32(len(b.Value))}
 
-	if err = length.Write(writer); err != nil {
-		return
-	}
+    if err = length.Write(writer); err != nil {
+        return
+    }
 
-	_, err = writer.Write(b.Value)
-	return
+    _, err = writer.Write(b.Value)
+    return
 }
 
 func (*ByteArray) Lookup(path string) ITag {
-	return nil
+    return nil
 }
 
 type String struct {
-	Value string
+    Value string
 }
 
 func (s *String) String() string {
-	return fmt.Sprintf("String(%q)", s.Value)
+    return fmt.Sprintf("String(%q)", s.Value)
 }
 
 func (*String) Type() TagType {
-	return TagString
+    return TagString
 }
 
 func (s *String) Read(reader io.Reader) (err error) {
-	var length Short
+    var length Short
 
-	err = length.Read(reader)
-	if err != nil {
-		return
-	}
+    err = length.Read(reader)
+    if err != nil {
+        return
+    }
 
-	bs := make([]byte, length.Value)
-	_, err = io.ReadFull(reader, bs)
-	if err != nil {
-		return
-	}
+    bs := make([]byte, length.Value)
+    _, err = io.ReadFull(reader, bs)
+    if err != nil {
+        return
+    }
 
-	s.Value = string(bs)
-	return
+    s.Value = string(bs)
+    return
 }
 
 func (s *String) Write(writer io.Writer) (err error) {
-	length := Short{int16(len(s.Value))}
+    length := Short{int16(len(s.Value))}
 
-	if err = length.Write(writer); err != nil {
-		return
-	}
+    if err = length.Write(writer); err != nil {
+        return
+    }
 
-	_, err = writer.Write([]byte(s.Value))
-	return
+    _, err = writer.Write([]byte(s.Value))
+    return
 }
 
 func (*String) Lookup(path string) ITag {
-	return nil
+    return nil
 }
 
 type List struct {
-	TagType TagType
-	Value   []ITag
+    TagType TagType
+    Value   []ITag
 }
 
 func (l *List) String() string {
-	subStrs := make([]string, len(l.Value))
-	for i := range l.Value {
-		subStrs[i] = l.Value[i].String()
-	}
-	return fmt.Sprintf("List(%s)", strings.Join(subStrs, ", "))
+    subStrs := make([]string, len(l.Value))
+    for i := range l.Value {
+        subStrs[i] = l.Value[i].String()
+    }
+    return fmt.Sprintf("List(%s)", strings.Join(subStrs, ", "))
 }
 
 func (*List) Type() TagType {
-	return TagList
+    return TagList
 }
 
 func (l *List) Read(reader io.Reader) (err error) {
-	if err = l.TagType.read(reader); err != nil {
-		return
-	}
+    if err = l.TagType.read(reader); err != nil {
+        return
+    }
 
-	var length Int
-	err = length.Read(reader)
-	if err != nil {
-		return
-	}
+    var length Int
+    err = length.Read(reader)
+    if err != nil {
+        return
+    }
 
-	list := make([]ITag, length.Value)
-	for i, _ := range list {
-		var tag ITag
-		if tag, err = l.TagType.NewTag(); err != nil {
-			return
-		}
-		err = tag.Read(reader)
-		if err != nil {
-			return
-		}
+    list := make([]ITag, length.Value)
+    for i, _ := range list {
+        var tag ITag
+        if tag, err = l.TagType.NewTag(); err != nil {
+            return
+        }
+        err = tag.Read(reader)
+        if err != nil {
+            return
+        }
 
-		list[i] = tag
-	}
+        list[i] = tag
+    }
 
-	l.Value = list
-	return
+    l.Value = list
+    return
 }
 
 func (l *List) Write(writer io.Writer) (err error) {
-	tagType := Byte{int8(l.TagType)}
-	if err = tagType.Write(writer); err != nil {
-		return
-	}
+    tagType := Byte{int8(l.TagType)}
+    if err = tagType.Write(writer); err != nil {
+        return
+    }
 
-	length := Int{int32(len(l.Value))}
-	if err = length.Write(writer); err != nil {
-		return
-	}
+    length := Int{int32(len(l.Value))}
+    if err = length.Write(writer); err != nil {
+        return
+    }
 
-	for _, tag := range l.Value {
-		if err = tag.Write(writer); err != nil {
-			return
-		}
-	}
+    for _, tag := range l.Value {
+        if err = tag.Write(writer); err != nil {
+            return
+        }
+    }
 
-	return
+    return
 }
 
 func (*List) Lookup(path string) ITag {
-	return nil
+    return nil
 }
 
 type Compound map[string]ITag
 
 func (c Compound) String() string {
-	subStrs := make([]string, len(c))
-	i := 0
-	for k, v := range c {
-		subStrs[i] = fmt.Sprintf("%q: %s", k, v)
-		i++
-	}
-	return fmt.Sprintf("Compound(%s)", strings.Join(subStrs, ", "))
+    subStrs := make([]string, len(c))
+    i := 0
+    for k, v := range c {
+        subStrs[i] = fmt.Sprintf("%q: %s", k, v)
+        i++
+    }
+    return fmt.Sprintf("Compound(%s)", strings.Join(subStrs, ", "))
 }
 
 func NewCompound() Compound {
-	return make(Compound)
+    return make(Compound)
 }
 
 func (Compound) Type() TagType {
-	return TagCompound
+    return TagCompound
 }
 
 func readTagAndName(reader io.Reader) (tag ITag, name string, err error) {
-	var tagType TagType
-	if tagType.read(reader); err != nil {
-		return
-	}
+    var tagType TagType
+    if tagType.read(reader); err != nil {
+        return
+    }
 
-	if tagType == TagEnd {
-		return
-	}
+    if tagType == TagEnd {
+        return
+    }
 
-	var nameTag String
-	if err = nameTag.Read(reader); err != nil {
-		return
-	}
+    var nameTag String
+    if err = nameTag.Read(reader); err != nil {
+        return
+    }
 
-	name = nameTag.Value
+    name = nameTag.Value
 
-	if tag, err = tagType.NewTag(); err != nil {
-		return
-	}
-	err = tag.Read(reader)
+    if tag, err = tagType.NewTag(); err != nil {
+        return
+    }
+    err = tag.Read(reader)
 
-	return
+    return
 }
 
 func (c Compound) Read(reader io.Reader) (err error) {
-	var tag ITag
-	var tagName string
+    var tag ITag
+    var tagName string
 
-	// In-place clear the map.
-	for k := range c {
-		delete(c, k)
-	}
+    // In-place clear the map.
+    for k := range c {
+        delete(c, k)
+    }
 
-	for {
-		if tag, tagName, err = readTagAndName(reader); err != nil {
-			return
-		}
+    for {
+        if tag, tagName, err = readTagAndName(reader); err != nil {
+            return
+        }
 
-		if tag == nil {
-			break
-		}
+        if tag == nil {
+            break
+        }
 
-		c[tagName] = tag
-	}
+        c[tagName] = tag
+    }
 
-	return
+    return
 }
 
 func writeTagAndName(writer io.Writer, tag ITag, name string) (err error) {
-	if err = tag.Type().write(writer); err != nil {
-		return
-	}
+    if err = tag.Type().write(writer); err != nil {
+        return
+    }
 
-	nameTag := String{name}
-	if err = nameTag.Write(writer); err != nil {
-		return
-	}
+    nameTag := String{name}
+    if err = nameTag.Write(writer); err != nil {
+        return
+    }
 
-	err = tag.Write(writer)
+    err = tag.Write(writer)
 
-	return
+    return
 }
 
 func (c Compound) Write(writer io.Writer) (err error) {
-	for name, tag := range c {
-		if err = writeTagAndName(writer, tag, name); err != nil {
-			return
-		}
-	}
+    for name, tag := range c {
+        if err = writeTagAndName(writer, tag, name); err != nil {
+            return
+        }
+    }
 
-	err = TagEnd.write(writer)
+    err = TagEnd.write(writer)
 
-	return
+    return
 }
 
 func (c Compound) Lookup(path string) (tag ITag) {
-	components := strings.SplitN(path, "/", 2)
-	tag, ok := c[components[0]]
-	if !ok {
-		return nil
-	}
+    components := strings.SplitN(path, "/", 2)
+    tag, ok := c[components[0]]
+    if !ok {
+        return nil
+    }
 
-	if len(components) >= 2 {
-		return tag.Lookup(components[1])
-	}
+    if len(components) >= 2 {
+        return tag.Lookup(components[1])
+    }
 
-	return tag
+    return tag
 }
 
 func (c Compound) Set(key string, tag ITag) {
-	c[key] = tag
+    c[key] = tag
 }
 
 // Read reads an NBT compound from the given reader.
 func Read(reader io.Reader) (tag Compound, err error) {
-	var itag ITag
-	var name string
-	if itag, name, err = readTagAndName(reader); err != nil {
-		return nil, err
-	}
+    var itag ITag
+    var name string
+    if itag, name, err = readTagAndName(reader); err != nil {
+        return nil, err
+    }
 
-	if name != "" {
-		return nil, errors.New("root name should be empty")
-	} else if itag == nil {
-		return nil, errors.New("end tag found at top level")
-	}
+    if name != "" {
+        return nil, errors.New("root name should be empty")
+    } else if itag == nil {
+        return nil, errors.New("end tag found at top level")
+    }
 
-	tag, ok := itag.(Compound)
-	if !ok {
-		return nil, errors.New("expected compound at top level")
-	}
+    tag, ok := itag.(Compound)
+    if !ok {
+        return nil, errors.New("expected compound at top level")
+    }
 
-	return tag, nil
+    return tag, nil
 }
 
 // Write writes an NBT compound to the given writer.
 func Write(writer io.Writer, tag Compound) (err error) {
-	return writeTagAndName(writer, tag, "")
+    return writeTagAndName(writer, tag, "")
 }

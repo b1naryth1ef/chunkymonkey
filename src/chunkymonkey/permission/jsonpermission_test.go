@@ -1,12 +1,12 @@
 package permission
 
 import (
-	"strings"
-	"testing"
+    "strings"
+    "testing"
 )
 
 const (
-	testUsersJson  = `{
+    testUsersJson = `{
 		"agon": {
 			"groups": ["admin"],
 			"permissions": [
@@ -29,7 +29,7 @@ const (
 			"groups": ["banned"]
 		}
 	}`
-	testGroupsJson = `{
+    testGroupsJson = `{
 		"basic": {
 			"permissions": [
 				"login"
@@ -59,82 +59,82 @@ const (
 )
 
 func testLoadPermission() (permissions IPermissions) {
-	usersReader := strings.NewReader(testUsersJson)
-	groupsReader := strings.NewReader(testGroupsJson)
+    usersReader := strings.NewReader(testUsersJson)
+    groupsReader := strings.NewReader(testGroupsJson)
 
-	permissions, err := LoadJsonPermission(usersReader, groupsReader)
-	if err != nil {
-		panic(err)
-	}
+    permissions, err := LoadJsonPermission(usersReader, groupsReader)
+    if err != nil {
+        panic(err)
+    }
 
-	return
+    return
 }
 
 func TestJsonPermission(t *testing.T) {
-	perm := testLoadPermission()
+    perm := testLoadPermission()
 
-	type Test struct {
-		username    string
-		permission  string
-		expectedHas bool
-	}
+    type Test struct {
+        username    string
+        permission  string
+        expectedHas bool
+    }
 
-	tests := []Test{
-		// Check user permissions
-		{"agon", "server.status", true},
-		// Check user permissions from groups
-		{"agon", "admin.commands.give", true},
-		// Check if user has no permission
-		{"huin", "this.node.does.not.exist.tm", false},
-		// Check group inheritance.
-		{"huin", "user.commands.me", true},
-		// Wildcard check
-		{"huin", "server.stop", true},
-		// Default player permissions.
-		{"newbie", "login", true},
-		{"newbie", "admin.commands.give", false},
-		// Banned player should have no permissions.
-		{"griefy", "login", false},
-		{"griefy", "world.build", false},
-	}
+    tests := []Test{
+        // Check user permissions
+        {"agon", "server.status", true},
+        // Check user permissions from groups
+        {"agon", "admin.commands.give", true},
+        // Check if user has no permission
+        {"huin", "this.node.does.not.exist.tm", false},
+        // Check group inheritance.
+        {"huin", "user.commands.me", true},
+        // Wildcard check
+        {"huin", "server.stop", true},
+        // Default player permissions.
+        {"newbie", "login", true},
+        {"newbie", "admin.commands.give", false},
+        // Banned player should have no permissions.
+        {"griefy", "login", false},
+        {"griefy", "world.build", false},
+    }
 
-	for i := range tests {
-		test := &tests[i]
-		result := perm.UserPermissions(test.username).Has(test.permission)
-		if test.expectedHas != result {
-			var msg string
-			if test.expectedHas {
-				msg = "User %s should have node %s"
-			} else {
-				msg = "User %s should *not* have node %s"
-			}
-			t.Errorf(msg, test.username, test.permission)
-		}
-	}
+    for i := range tests {
+        test := &tests[i]
+        result := perm.UserPermissions(test.username).Has(test.permission)
+        if test.expectedHas != result {
+            var msg string
+            if test.expectedHas {
+                msg = "User %s should have node %s"
+            } else {
+                msg = "User %s should *not* have node %s"
+            }
+            t.Errorf(msg, test.username, test.permission)
+        }
+    }
 }
 
 func Benchmark_PermissionMatchExact(b *testing.B) {
-	perm := testLoadPermission()
+    perm := testLoadPermission()
 
-	userPerm := perm.UserPermissions("defaulty")
+    userPerm := perm.UserPermissions("defaulty")
 
-	b.ResetTimer()
-	b.StartTimer()
+    b.ResetTimer()
+    b.StartTimer()
 
-	for i := 0; i < b.N; i++ {
-		userPerm.Has("user.commands.me")
-	}
+    for i := 0; i < b.N; i++ {
+        userPerm.Has("user.commands.me")
+    }
 }
 
 func Benchmark_PermissionMatchWildcard(b *testing.B) {
-	perm := testLoadPermission()
+    perm := testLoadPermission()
 
-	userPerm := perm.UserPermissions("huin")
+    userPerm := perm.UserPermissions("huin")
 
-	b.ResetTimer()
-	b.StartTimer()
+    b.ResetTimer()
+    b.StartTimer()
 
-	for i := 0; i < b.N; i++ {
-		userPerm.Has("world.foo")
-	}
+    for i := 0; i < b.N; i++ {
+        userPerm.Has("world.foo")
+    }
 }

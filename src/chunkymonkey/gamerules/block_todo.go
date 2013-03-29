@@ -1,7 +1,7 @@
 package gamerules
 
 func makeTodoAspect() (aspect IBlockAspect) {
-	return &TodoAspect{}
+    return &TodoAspect{}
 }
 
 // TodoAspect has the same behaviour as that of a "void" block -
@@ -9,10 +9,10 @@ func makeTodoAspect() (aspect IBlockAspect) {
 // whose behaviour is still to be implemented. A comment allows for
 // notes to be made, but provides no functional change.
 type TodoAspect struct {
-	StandardAspect
-	Comment string
+    StandardAspect
+    Comment string
 }
 
 func (aspect *TodoAspect) Name() string {
-	return "Todo"
+    return "Todo"
 }
