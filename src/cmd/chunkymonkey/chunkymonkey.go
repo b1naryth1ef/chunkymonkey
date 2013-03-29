@@ -124,5 +124,6 @@ func main() {
 		log.Fatal(err)
 	}
 
+	log.Printf("Server started on %s", *httpAddr)
 	game.Serve()
 }
