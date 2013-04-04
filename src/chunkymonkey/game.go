@@ -73,14 +73,16 @@ func NewGame(worldPath string, listener net.Listener, serverDesc, maintenanceMsg
 
     // Start accepting connections.
     game.connHandler = NewConnHandler(listener, &GameInfo{
-        game:           game,
-        maxPlayerCount: maxPlayerCount,
-        serverDesc:     serverDesc,
-        maintenanceMsg: maintenanceMsg,
-        shardManager:   game.shardManager,
-        entityManager:  &game.entityManager,
-        worldStore:     game.worldStore,
-        authserver:     authserver,
+        game:            game,
+        protocolVersion: proto.ProtocolVersion,
+        versionName:     "1.5.1",
+        maxPlayerCount:  maxPlayerCount,
+        serverDesc:      serverDesc,
+        maintenanceMsg:  maintenanceMsg,
+        shardManager:    game.shardManager,
+        entityManager:   &game.entityManager,
+        worldStore:      game.worldStore,
+        authserver:      authserver,
     })
 
     return
