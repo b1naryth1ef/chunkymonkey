@@ -505,7 +505,7 @@ func (i *IntArray) Read(reader io.Reader) (err error) {
     }
 
     ns := make([]int, length.Value)
-    for v := range bs {
+    for _, v := range bs {
         ns = append(ns, int(v))
     }
 
@@ -521,7 +521,7 @@ func (i *IntArray) Write(writer io.Writer) (err error) {
     }
 
     bs := make([]byte, length.Value)
-    for v := range i.Value {
+    for _, v := range i.Value {
         bs = append(bs, byte(v))
     }
 
