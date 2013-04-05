@@ -128,10 +128,8 @@ func NewFallingSand() INonPlayerEntity {
     return NewObject(ObjTypeIdFallingSand)
 }
 
-func NewFallingGravel() INonPlayerEntity {
-    return NewObject(ObjTypeIdFallingGravel)
-}
-
 func NewFishingFloat() INonPlayerEntity {
     return NewObject(ObjTypeIdFishingFloat)
 }
+
+//@TODO 1.5.1

@@ -1,5 +1,7 @@
 package gamerules
 
+//@TODO 1.5.1
+
 var EntityCreateByName = map[string]func() INonPlayerEntity{
     // Pick-up items.
     "Item": NewBlankItem,
@@ -27,7 +29,6 @@ var EntityCreateByName = map[string]func() INonPlayerEntity{
     "ThrownSnowball": NewThrownSnowball,
     "ThrownEgg":      NewThrownEgg,
     "FallingSand":    NewFallingSand,
-    "FallingGravel":  NewFallingGravel,
     "FishingFloat":   NewFishingFloat,
 }
 
