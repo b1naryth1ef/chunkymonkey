@@ -2,6 +2,7 @@ package chunkstore
 
 import (
     "fmt"
+    "log"
     "os"
     "path"
 
@@ -55,6 +56,7 @@ func (s *chunkStoreAnvil) regionFile(chunkLoc ChunkXz) (rf *regionFile, err erro
     // most-frequently-used regions. Close regionFile objects when no
     // longer needed.
     filePath := regionLoc.regionFilePath(s.regionPath)
+    log.Printf("PATH: %s", filePath)
     rf, err = newRegionFile(filePath)
     if err != nil {
         if os.IsNotExist(err) {

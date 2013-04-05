@@ -43,7 +43,7 @@ type IChunkReader interface {
     SkyLight() []byte
 
     // Returns the height map data in the chunk.
-    HeightMap() []byte
+    HeightMap() []int
 
     // Return a slice of the entities (items, mobs) within the chunk.
     Entities() []gamerules.INonPlayerEntity
@@ -82,7 +82,7 @@ type IChunkWriter interface {
     SetSkyLight(skyLight []byte)
 
     // SetHeightMap sets the height map data in the chunk.
-    SetHeightMap(heightMap []byte)
+    SetHeightMap(heightMap []int)
 
     // SetEntities sets a list of the entities (items, mobs) within the chunk.
     SetEntities(entities map[EntityId]gamerules.INonPlayerEntity)

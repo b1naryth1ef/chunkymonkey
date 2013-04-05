@@ -21,7 +21,7 @@ type ChunkData struct {
     blockData  []byte
     blockLight []byte
     skyLight   []byte
-    heightMap  []byte
+    heightMap  []int
 }
 
 func newChunkData(loc ChunkXz) *ChunkData {
@@ -31,7 +31,7 @@ func newChunkData(loc ChunkXz) *ChunkData {
         blockData:  make([]byte, (ChunkSizeH*ChunkSizeH*ChunkSizeY)>>1),
         skyLight:   make([]byte, (ChunkSizeH*ChunkSizeH*ChunkSizeY)>>1),
         blockLight: make([]byte, (ChunkSizeH*ChunkSizeH*ChunkSizeY)>>1),
-        heightMap:  make([]byte, ChunkSizeH*ChunkSizeH),
+        heightMap:  make([]int, ChunkSizeH*ChunkSizeH),
     }
 }
 
@@ -55,7 +55,7 @@ func (data *ChunkData) SkyLight() []byte {
     return data.skyLight
 }
 
-func (data *ChunkData) HeightMap() []byte {
+func (data *ChunkData) HeightMap() []int {
     return data.heightMap
 }
 
@@ -163,7 +163,7 @@ func (gen *TestGenerator) ReadChunk(chunkLoc ChunkXz) (reader chunkstore.IChunkR
                 height,
                 data.blocks[baseIndex:baseIndex+ChunkSizeY])
 
-            data.heightMap[heightMapIndex] = byte(skyLightHeight)
+            data.heightMap[heightMapIndex] = int(skyLightHeight)
 
             heightMapIndex++
             baseIndex += ChunkSizeY

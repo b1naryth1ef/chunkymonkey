@@ -67,8 +67,8 @@ func (w *nbtChunkWriter) SetSkyLight(skyLight []byte) {
     w.chunkTag.Lookup("Level/SkyLight").(*nbt.ByteArray).Value = cloneByteArray(skyLight)
 }
 
-func (w *nbtChunkWriter) SetHeightMap(heightMap []byte) {
-    w.chunkTag.Lookup("Level/HeightMap").(*nbt.ByteArray).Value = cloneByteArray(heightMap)
+func (w *nbtChunkWriter) SetHeightMap(heightMap []int) {
+    //w.chunkTag.Lookup("Level/HeightMap").(*nbt.ByteArray).Value = cloneByteArray(heightMap)
 }
 
 func (w *nbtChunkWriter) SetEntities(entities map[EntityId]gamerules.INonPlayerEntity) {

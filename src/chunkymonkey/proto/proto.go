@@ -941,6 +941,10 @@ func (cd *ChunkData) MinecraftMarshal(writer io.Writer, ps *PacketSerializer) (e
 
     numBlocks := (int(cd.Size.X) + 1) * (int(cd.Size.Y) + 1) * (int(cd.Size.Z) + 1)
     numNibbles := numBlocks >> 1
+    log.Printf("%s, %s", len(cd.Blocks), numBlocks)
+    log.Printf("%s, %s", len(cd.BlockData), numNibbles)
+    log.Printf("%s, %s", len(cd.BlockLight), numNibbles)
+    log.Printf("%s, %s", len(cd.SkyLight), numNibbles)
     if len(cd.Blocks) != numBlocks || len(cd.BlockData) != numNibbles || len(cd.BlockLight) != numNibbles || len(cd.SkyLight) != numNibbles {
         return ErrorBadChunkDataSize
     }

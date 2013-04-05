@@ -21,7 +21,7 @@ type Chunk struct {
     blockData    []byte
     blockLight   []byte
     skyLight     []byte
-    heightMap    []byte
+    heightMap    []int
     entities     map[EntityId]gamerules.INonPlayerEntity // Entities (mobs, items, etc)
     tileEntities map[BlockIndex]gamerules.ITileEntity    // Used by IBlockAspect to store private specific data.
     rand         *rand.Rand
