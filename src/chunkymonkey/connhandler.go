@@ -32,6 +32,8 @@ var (
     clientErrAuthFailed   = errors.New("Minecraft authentication failed.")
     clientErrUserData     = errors.New("Error reading user data. Please contact the server administrator.")
 
+    loginErrVersionHigh   = errors.New("Your client is out of date!")
+    loginErrVersionLow    = errors.New("Your client is running a newer version then the server!")
     loginErrorConnType    = errors.New("unknown/bad connection type")
     loginErrorMaintenance = errors.New("server under maintenance")
     loginErrorServerList  = errors.New("server list poll")
@@ -147,7 +149,17 @@ func (l *pktHandler) handle() {
 }
 
 func (l *pktHandler) handleLogin(pktHandshake *proto.PacketHandshake) (err, clientErr error) {
-    username := pktHandshake.UsernameOrHash
+    pversion := int(pktHandshake.ProtocolVersion)
+    if l.gameInfo.protocolVersion > pversion {
+        err = loginErrVersionHigh
+        clientErr = err
+    }
+    if l.gameInfo.protocolVersion < pversion {
+        err = loginErrVersionLow
+        clientErr = err
+    }
+
+    username := pktHandshake.Username
     if !validPlayerUsername.MatchString(username) {
         err = clientErrUsername
         clientErr = err
@@ -156,7 +168,7 @@ func (l *pktHandler) handleLogin(pktHandshake *proto.PacketHandshake) (err, clie
 
     log.Print("Client ", l.conn.RemoteAddr(), " connected as ", username)
 
-    // TODO Allow admins to connect.
+    //@TODO Allow admins to connect.
     if l.gameInfo.maintenanceMsg != "" {
         err = loginErrorMaintenance
         clientErr = errors.New(l.gameInfo.maintenanceMsg)
@@ -174,29 +186,20 @@ func (l *pktHandler) handleLogin(pktHandshake *proto.PacketHandshake) (err, clie
     sessionId := fmt.Sprintf("%016x", rand.Int63())
     log.Printf("Player %q has sessionId %s", username, sessionId)
 
-    if err = l.ps.WritePacket(l.conn, &proto.PacketHandshake{sessionId}); err != nil {
-        clientErr = clientErrHandshake
-        return
-    }
-
-    if _, err = l.ps.ReadPacketExpect(l.conn, true, 0x01); err != nil {
-        clientErr = clientErrLoginGeneral
-        return
-    }
-
-    authenticated, err := l.gameInfo.authserver.Authenticate(sessionId, username)
-    if !authenticated || err != nil {
-        var reason string
-        if err != nil {
-            reason = "Authentication check failed: " + err.Error()
-        } else {
-            reason = "Failed authentication"
-        }
-        err = fmt.Errorf("Client %v: %s", l.conn.RemoteAddr(), reason)
-        clientErr = clientErrAuthFailed
-        return
-    }
-    log.Print("Client ", l.conn.RemoteAddr(), " passed minecraft.net authentication")
+    // @ISSUE #4
+    // authenticated, err := l.gameInfo.authserver.Authenticate(sessionId, username)
+    // if !authenticated || err != nil {
+    //     var reason string
+    //     if err != nil {
+    //         reason = "Authentication check failed: " + err.Error()
+    //     } else {
+    //         reason = "Failed authentication"
+    //     }
+    //     err = fmt.Errorf("Client %v: %s", l.conn.RemoteAddr(), reason)
+    //     clientErr = clientErrAuthFailed
+    //     return
+    // }
+    // log.Print("Client ", l.conn.RemoteAddr(), " passed minecraft.net authentication")
 
     entityId := l.gameInfo.entityManager.NewEntity()
 

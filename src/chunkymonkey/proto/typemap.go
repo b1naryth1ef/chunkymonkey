@@ -33,8 +33,8 @@ var pktDefns = []struct {
 }{
     // id, c->s, s->c, packet
     {0x00, true, true, &PacketKeepAlive{}},
-    {0x01, true, true, &PacketLogin{}},
-    {0x02, true, true, &PacketHandshake{}},
+    {0x01, false, true, &PacketLogin{}},
+    {0x02, true, false, &PacketHandshake{}},
     {0x03, true, true, &PacketChatMessage{}},
     {0x04, false, true, &PacketTimeUpdate{}},
     {0x05, false, true, &PacketEntityEquipment{}},

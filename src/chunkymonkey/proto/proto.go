@@ -61,21 +61,22 @@ type PacketKeepAlive struct {
 func (*PacketKeepAlive) IsPacket() {}
 
 type PacketLogin struct {
-    VersionOrEntityId int32
-    Username          string
-    MapSeed           RandomSeed
-    LevelType         string
-    GameMode          int32
-    Dimension         DimensionId
-    Difficulty        GameDifficulty
-    WorldHeight       byte
-    MaxPlayers        byte
+    EntityId   int32
+    LevelType  string
+    GameMode   int32
+    Dimension  DimensionId
+    Difficulty GameDifficulty
+    Unused     byte
+    MaxPlayers int32
 }
 
 func (*PacketLogin) IsPacket() {}
 
 type PacketHandshake struct {
-    UsernameOrHash string
+    ProtocolVersion byte
+    Username        string
+    ServerHost      string
+    ServerPort      int32
 }
 
 func (*PacketHandshake) IsPacket() {}

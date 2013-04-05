@@ -286,18 +286,13 @@ func (player *Player) getHeldItemTypeId() ItemTypeId {
 
 func (player *Player) Run() {
     data := player.txPktSerial.SerializePackets(
-        &proto.PacketLogin{
-            VersionOrEntityId: int32(player.EntityId),
-            Username:          "",
-            MapSeed:           0,         // TODO pass proper map seed.
-            LevelType:         "DEFAULT", // TODO proper level type
-            GameMode:          0,
-            // TODO pass proper dimension. This is low priority, because we don't yet
-            // support multiple dimensions.
-            Dimension:   DimensionNormal,
-            Difficulty:  GameDifficultyNormal, // TODO pass proper values for the difficulty.
-            WorldHeight: MaxYCoord + 1,
-            MaxPlayers:  8,  // TODO proper max number of players.
+        &proto.PacketLogin{ //@TODO This isnt very dynamic
+            EntityId:   int32(player.EntityId),
+            LevelType:  string(LevelTypeDefault),
+            GameMode:   int32(GameTypeSurvival),
+            Dimension:  DimensionNormal,
+            Difficulty: GameDifficultyPeaceful,
+            MaxPlayers: int32(player.game.GetMaxPlayers()),
         },
         &proto.PacketSpawnPosition{player.spawnBlock.X, int32(player.spawnBlock.Y), player.spawnBlock.Z},
     )
@@ -307,6 +302,7 @@ func (player *Player) Run() {
     go player.rx.loop()
     go player.transmitLoop()
     go player.mainLoop()
+    //player.game.BroadcastMessage(fmt.Sprintf("%s joined", player.Name()))
 }
 
 func (player *Player) Stop() {
@@ -734,13 +730,14 @@ func (player *Player) mainLoop() {
     expVarPlayerConnectionCount.Add(1)
     defer expVarPlayerDisconnectionCount.Add(1)
 
-    player.chunkSubs.Init(player)
-    defer player.chunkSubs.Close()
+    //@TODO Waiting on Anvil format
+    //player.chunkSubs.Init(player)
+    //defer player.chunkSubs.Close()
 
     // Start the keep-alive/latency pings.
     player.pingNew()
 
-    player.sendChatMessage(fmt.Sprintf("%s has joined", player.name), false)
+    //player.sendChatMessage(fmt.Sprintf("%s has joined", player.name), false)
 
 MAINLOOP:
     for {

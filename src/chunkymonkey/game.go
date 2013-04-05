@@ -41,6 +41,7 @@ type Game struct {
     // Server information
     time           Ticks
     maintenanceMsg string // if set, logins are disallowed.
+    maxPlayerCount int
 }
 
 func NewGame(worldPath string, listener net.Listener, serverDesc, maintenanceMsg string, maxPlayerCount int) (game *Game, err error) {
@@ -57,6 +58,7 @@ func NewGame(worldPath string, listener net.Listener, serverDesc, maintenanceMsg
         playerDisconnect: make(chan EntityId),
         time:             worldStore.Time,
         worldStore:       worldStore,
+        maxPlayerCount:   maxPlayerCount,
     }
 
     game.entityManager.Init()
@@ -76,7 +78,7 @@ func NewGame(worldPath string, listener net.Listener, serverDesc, maintenanceMsg
         game:            game,
         protocolVersion: proto.ProtocolVersion,
         versionName:     "1.5.1",
-        maxPlayerCount:  maxPlayerCount,
+        maxPlayerCount:  game.maxPlayerCount,
         serverDesc:      serverDesc,
         maintenanceMsg:  maintenanceMsg,
         shardManager:    game.shardManager,
@@ -86,6 +88,10 @@ func NewGame(worldPath string, listener net.Listener, serverDesc, maintenanceMsg
     })
 
     return
+}
+
+func (game *Game) GetMaxPlayers() int {
+    return game.maxPlayerCount
 }
 
 // Fetch external events and respond appropriately.

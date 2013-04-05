@@ -99,6 +99,9 @@ type IGame interface {
     // Return an ItemType from a numeric item. The boolean flag indicates
     // whether or not 'id' was a valid item type.
     ItemTypeById(id int) (ItemType, bool)
+
+    // Get the maximum number of players
+    GetMaxPlayers() int
 }
 
 // IShardClient is the interface by which shards communicate to players on
