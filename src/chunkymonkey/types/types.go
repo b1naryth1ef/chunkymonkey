@@ -35,14 +35,25 @@ type DimensionId int8
 const (
     DimensionNether = DimensionId(-1)
     DimensionNormal = DimensionId(0)
+    DimensionEnd    = DimensionId(1)
 )
 
 // GameType indicates the server play mode.
-type GameType byte
+type GameType int8
 
 const (
-    GameTypeSurvival = GameType(0)
-    GameTypeCreative = GameType(1)
+    GameTypeSurvival  = GameType(0)
+    GameTypeCreative  = GameType(1)
+    GameTypeAdventure = GameType(2)
+)
+
+// What type of level is it?
+type LevelType string
+
+const (
+    LevelTypeDefault     = LevelType("default")
+    LevelTypeFlat        = LevelType("flat")
+    LevelTypeLargeBiomes = LevelType("largeBiomes")
 )
 
 // Player/mob health.
