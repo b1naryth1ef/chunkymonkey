@@ -62,6 +62,7 @@ const (
     TagString    = TagType(8)
     TagList      = TagType(9)
     TagCompound  = TagType(10)
+    TagIntArray  = TagType(11)
 )
 
 // NewTag creates a new tag of the given TagType. TagEnd is not a valid value
@@ -88,6 +89,8 @@ func (tt TagType) NewTag() (tag ITag, err error) {
         tag = new(List)
     case TagCompound:
         tag = make(Compound)
+    case TagIntArray:
+        tag = new(IntArray)
     default:
         err = fmt.Errorf("invalid NBT tag type %#x", tt)
     }
@@ -474,6 +477,63 @@ func (c Compound) Read(reader io.Reader) (err error) {
 
     return
 }
+
+type IntArray struct {
+    Value []int
+}
+
+func (i *IntArray) String() string {
+    return fmt.Sprintf("IntArray(%x)", i.Value)
+}
+
+func (i *IntArray) Type() TagType {
+    return TagIntArray
+}
+
+func (i *IntArray) Read(reader io.Reader) (err error) {
+    var length Int
+
+    err = length.Read(reader)
+    if err != nil {
+        return
+    }
+
+    bs := make([]byte, length.Value)
+    _, err = io.ReadFull(reader, bs)
+    if err != nil {
+        return
+    }
+
+    ns := make([]int, length.Value)
+    for v := range bs {
+        ns = append(ns, int(v))
+    }
+
+    i.Value = ns
+    return
+}
+
+func (i *IntArray) Write(writer io.Writer) (err error) {
+    length := Int{int32(len(i.Value))}
+
+    if err = length.Write(writer); err != nil {
+        return
+    }
+
+    bs := make([]byte, length.Value)
+    for v := range i.Value {
+        bs = append(bs, byte(v))
+    }
+
+    _, err = writer.Write(bs)
+    return
+}
+
+func (i *IntArray) Lookup(path string) ITag {
+    return nil
+}
+
+// etc
 
 func writeTagAndName(writer io.Writer, tag ITag, name string) (err error) {
     if err = tag.Type().write(writer); err != nil {
