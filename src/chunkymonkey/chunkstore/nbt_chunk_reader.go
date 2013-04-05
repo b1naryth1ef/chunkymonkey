@@ -35,20 +35,64 @@ func (r *nbtChunkReader) ChunkLoc() ChunkXz {
     }
 }
 
+func (r *nbtChunkReader) Sections() (comps []nbt.Compound) {
+    sectionsTag, ok := r.chunkTag.Lookup("Level/Sections").(*nbt.List)
+    if !ok {
+        return
+    }
+
+    comps = make([]nbt.Compound, len(sectionsTag.Value))
+    for _, value := range sectionsTag.Value {
+        comp, ok := value.(nbt.Compound)
+        if !ok {
+            log.Printf("Found non-compound in sections list: %T", value)
+            continue
+        }
+
+        comps = append(comps, comp)
+    }
+
+    return comps
+}
+
 func (r *nbtChunkReader) Blocks() []byte {
-    return r.chunkTag.Lookup("Level/Blocks").(*nbt.ByteArray).Value
+    res := make([]byte, 4096)
+
+    for _, value := range r.Sections() {
+        copy(res, value.Lookup("Blocks").(*nbt.ByteArray).Value)
+    }
+
+    return res
 }
 
 func (r *nbtChunkReader) BlockData() []byte {
-    return r.chunkTag.Lookup("Level/Data").(*nbt.ByteArray).Value
+    res := make([]byte, 4096)
+
+    for _, value := range r.Sections() {
+        copy(res, value.Lookup("Data").(*nbt.ByteArray).Value)
+    }
+
+    return res
 }
 
 func (r *nbtChunkReader) BlockLight() []byte {
-    return r.chunkTag.Lookup("Level/BlockLight").(*nbt.ByteArray).Value
+    res := make([]byte, 4096)
+
+    for _, value := range r.Sections() {
+        copy(res, value.Lookup("BlockLight").(*nbt.ByteArray).Value)
+    }
+
+    return res
 }
 
 func (r *nbtChunkReader) SkyLight() []byte {
-    return r.chunkTag.Lookup("Level/SkyLight").(*nbt.ByteArray).Value
+    res := make([]byte, 4096)
+
+    for _, value := range r.Sections() {
+        copy(res, value.Lookup("SkyLight").(*nbt.ByteArray).Value)
+    }
+
+    return res
 }
 
 func (r *nbtChunkReader) HeightMap() []byte {

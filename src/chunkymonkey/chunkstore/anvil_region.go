@@ -286,6 +286,6 @@ func (loc *regionLoc) regionKey() uint64 {
 func (loc *regionLoc) regionFilePath(regionPath string) string {
     return path.Join(
         regionPath,
-        fmt.Sprintf("r.%d.%d.mcr", loc.X, loc.Z),
+        fmt.Sprintf("r.%d.%d.mca", loc.X, loc.Z),
     )
 }
