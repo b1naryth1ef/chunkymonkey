@@ -149,7 +149,7 @@ func (game *Game) onTick() {
 
 // Send a time/keepalive packet
 func (game *Game) sendTimeUpdate() {
-    game.multicastPacket(&proto.PacketTimeUpdate{game.time}, nil)
+    game.multicastPacket(&proto.PacketTimeUpdate{Ticks(24000), game.time}, nil)
 }
 
 // Send a packet to every player connected to the server

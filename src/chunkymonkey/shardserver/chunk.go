@@ -119,11 +119,11 @@ func (chunk *Chunk) setBlock(blockLoc *BlockXyz, subLoc *SubChunkXyz, index Bloc
 
     // Tell players that the block changed.
     buf := new(bytes.Buffer)
-    chunk.shard.pktSerial.WritePacketsBuffer(buf, &proto.PacketBlockChange{
-        Block:     *blockLoc,
-        TypeId:    blockType,
-        BlockData: blockData,
-    })
+    // chunk.shard.pktSerial.WritePacketsBuffer(buf, &proto.PacketBlockChange{ @TODO 1.5.1
+    //     Block:     *blockLoc,
+    //     TypeId:    blockType,
+    //     BlockData: blockData,
+    // })
     chunk.reqMulticastPlayers(-1, buf.Bytes())
 
     return
@@ -180,7 +180,7 @@ func (chunk *Chunk) removeEntity(s gamerules.INonPlayerEntity) {
     delete(chunk.entities, entityId)
 
     // Tell all subscribers that the spawn's entity is destroyed.
-    data := chunk.shard.pktSerial.SerializePackets(&proto.PacketEntityDestroy{entityId})
+    data := chunk.shard.pktSerial.SerializePackets(&proto.PacketEntityDestroy{EntityCount: 1, EntityId: entityId})
     chunk.reqMulticastPlayers(-1, data)
 
     chunk.storeDirty = true
@@ -601,10 +601,10 @@ func (chunk *Chunk) reqSubscribeChunk(entityId EntityId, player gamerules.IPlaye
 
     // Transmit the chunk data to the new player.
     buf := new(bytes.Buffer)
-    chunk.shard.pktSerial.WritePacketsBuffer(buf, &proto.PacketPreChunk{
-        ChunkLoc: chunk.loc,
-        Mode:     ChunkInit,
-    })
+    // chunk.shard.pktSerial.WritePacketsBuffer(buf, &proto.PacketPreChunk{ //@TODO 1.5.1
+    //     ChunkLoc: chunk.loc,
+    //     Mode:     ChunkInit,
+    // })
     player.TransmitPacket(buf.Bytes())
     player.TransmitPacket(chunk.chunkPacket())
     if notify {
@@ -648,10 +648,10 @@ func (chunk *Chunk) reqUnsubscribeChunk(entityId EntityId, sendPacket bool) {
 
         if sendPacket {
             buf := new(bytes.Buffer)
-            chunk.shard.pktSerial.WritePacketsBuffer(buf, &proto.PacketPreChunk{
-                ChunkLoc: chunk.loc,
-                Mode:     ChunkUnload,
-            })
+            // chunk.shard.pktSerial.WritePacketsBuffer(buf, &proto.PacketPreChunk{ // @TODO 1.5.1
+            //     ChunkLoc: chunk.loc,
+            //     Mode:     ChunkUnload,
+            // })
             player.TransmitPacket(buf.Bytes())
         }
     }
@@ -722,7 +722,7 @@ func (chunk *Chunk) reqRemovePlayerData(entityId EntityId, isDisconnect bool) {
 
     if isDisconnect {
         buf := new(bytes.Buffer)
-        chunk.shard.pktSerial.WritePacketsBuffer(buf, &proto.PacketEntityDestroy{entityId})
+        chunk.shard.pktSerial.WritePacketsBuffer(buf, &proto.PacketEntityDestroy{EntityCount: 1, EntityId: entityId})
         chunk.reqMulticastPlayers(entityId, buf.Bytes())
     }
 }
@@ -786,16 +786,16 @@ func (chunk *Chunk) reqSetPlayerLook(entityId EntityId, look LookBytes) {
 func (chunk *Chunk) chunkPacket() []byte {
     if chunk.cachedPacket == nil {
         buf := bytes.NewBuffer(make([]byte, 0, 4096))
-        chunk.shard.pktSerial.WritePacketsBuffer(buf, &proto.PacketMapChunk{
-            Corner: BlockXyz{},
-            Data: proto.ChunkData{
-                Size:       proto.ChunkDataSize{ChunkSizeH - 1, ChunkSizeY - 1, ChunkSizeH - 1},
-                Blocks:     chunk.blocks,
-                BlockData:  chunk.blockData,
-                BlockLight: chunk.blockLight,
-                SkyLight:   chunk.skyLight,
-            },
-        })
+        // chunk.shard.pktSerial.WritePacketsBuffer(buf, &proto.PacketMapChunk{ // @TODO 1.5.1
+        //     Corner: BlockXyz{},
+        //     Data: proto.ChunkData{
+        //         Size:       proto.ChunkDataSize{ChunkSizeH - 1, ChunkSizeY - 1, ChunkSizeH - 1},
+        //         Blocks:     chunk.blocks,
+        //         BlockData:  chunk.blockData,
+        //         BlockLight: chunk.blockLight,
+        //         SkyLight:   chunk.skyLight,
+        //     },
+        // })
         chunk.cachedPacket = buf.Bytes()
     }
 
