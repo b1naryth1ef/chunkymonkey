@@ -25,8 +25,7 @@ type chunkStoreBeta struct {
     regionFiles map[uint64]*regionFile
 }
 
-// Creates a chunkStoreBeta that reads the Minecraft Beta world format.
-func newChunkStoreBeta(worldPath string, dimension DimensionId) (s *chunkStoreBeta, err error) {
+func newChunkStoreAnvil(worldPath string, dimension DimensionId) (s *chunkStoreBeta, err error) {
     s = &chunkStoreBeta{
         regionFiles: make(map[uint64]*regionFile),
     }
