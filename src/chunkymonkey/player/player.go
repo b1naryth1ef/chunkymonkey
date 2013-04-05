@@ -13,7 +13,7 @@ import (
 
     "chunkymonkey/gamerules"
     "chunkymonkey/nbtutil"
-    "chunkymonkey/physics"
+    //"chunkymonkey/physics"
     "chunkymonkey/proto"
     . "chunkymonkey/types"
     "chunkymonkey/window"
@@ -294,7 +294,7 @@ func (player *Player) Run() {
             Difficulty: GameDifficultyPeaceful,
             MaxPlayers: int32(player.game.GetMaxPlayers()),
         },
-        &proto.PacketSpawnPosition{player.spawnBlock.X, int32(player.spawnBlock.Y), player.spawnBlock.Z},
+        &proto.PacketSpawnPosition{player.spawnBlock.X, BlockYCoord(int32(player.spawnBlock.Y)), player.spawnBlock.Z},
     )
 
     player.TransmitPacket(data)
@@ -338,10 +338,6 @@ func (player *Player) handlePacket(pkt interface{}) {
         player.handlePacketPlayerLook(pkt)
     case *proto.PacketPlayerPositionLook:
         player.handlePacketPlayerPositionLook(pkt)
-    case *proto.PacketPlayerBlockHit:
-        player.handlePacketPlayerBlockHit(pkt)
-    case *proto.PacketPlayerBlockInteract:
-        player.handlePacketPlayerBlockInteract(pkt)
     case *proto.PacketPlayerHoldingChange:
         player.handlePacketPlayerHoldingChange(pkt)
     case *proto.PacketEntityAnimation:
@@ -452,66 +448,6 @@ func (player *Player) handleLook(look LookDegrees) {
     }
 }
 
-func (player *Player) handlePacketPlayerBlockHit(pkt *proto.PacketPlayerBlockHit) {
-
-    if pkt.Status == DigDropItem {
-        // Thrown item.
-        blockLoc := player.position.ToBlockXyz()
-        shardClient, _, ok := player.chunkSubs.ShardClientForBlockXyz(blockLoc)
-        if !ok {
-            return
-        }
-
-        var itemToThrow gamerules.Slot
-        player.inventory.TakeOneHeldItem(&itemToThrow)
-        if !itemToThrow.IsEmpty() {
-            velocity := physics.VelocityFromLook(player.look, 0.50)
-            position := player.position
-            position.Y += player.height
-            shardClient.ReqDropItem(itemToThrow, position, velocity, TicksPerSecond/2)
-        }
-    } else {
-        // Block hit.
-
-        // Validate that the player is actually somewhere near the block.
-        targetAbsPos := pkt.Block.MidPointToAbsXyz()
-        if !targetAbsPos.IsWithinDistanceOf(player.position, MaxInteractDistance) {
-            log.Printf("Player/PacketPlayerBlockHit: ignoring player dig at %v (too far away)", pkt.Block)
-            return
-        }
-
-        // TODO measure the dig time on the target block and relay to the shard to
-        // stop speed hacking (based on block type and tool used - non-trivial).
-
-        shardClient, _, ok := player.chunkSubs.ShardClientForBlockXyz(&pkt.Block)
-        if ok {
-            held, _ := player.inventory.HeldItem()
-            shardClient.ReqHitBlock(held, pkt.Block, pkt.Status, pkt.Face)
-        }
-    }
-}
-
-func (player *Player) handlePacketPlayerBlockInteract(pkt *proto.PacketPlayerBlockInteract) {
-    if pkt.Face < FaceMinValid || pkt.Face > FaceMaxValid {
-        // TODO sometimes FaceNull means something. This case should be covered.
-        log.Printf("Player/PacketPlayerBlockInteract: invalid face %d", pkt.Face)
-        return
-    }
-
-    // Validate that the player is actually somewhere near the block.
-    targetAbsPos := pkt.Block.MidPointToAbsXyz()
-    if !targetAbsPos.IsWithinDistanceOf(player.position, MaxInteractDistance) {
-        log.Printf("Player/PacketPlayerBlockInteract: ignoring player interact at %v (too far away)", pkt.Block)
-        return
-    }
-
-    shardClient, _, ok := player.chunkSubs.ShardClientForBlockXyz(&pkt.Block)
-    if ok {
-        held, _ := player.inventory.HeldItem()
-        shardClient.ReqInteractBlock(held, pkt.Block, pkt.Face)
-    }
-}
-
 func (player *Player) handlePacketPlayerHoldingChange(pkt *proto.PacketPlayerHoldingChange) {
     player.inventory.SetHolding(pkt.SlotId)
 }
@@ -552,11 +488,11 @@ func (player *Player) handlePacketWindowClick(pkt *proto.PacketWindowClick) {
     click := gamerules.Click{
         SlotId:     pkt.Slot,
         Cursor:     player.cursor,
-        RightClick: pkt.RightClick,
-        ShiftClick: pkt.Shift,
+        RightClick: pkt.RightClick == 1,
+        ShiftClick: pkt.Mode == 1,
         TxId:       pkt.TxId,
     }
-    click.ExpectedSlot.SetItemSlot(&pkt.ExpectedSlot)
+    //click.ExpectedSlot.SetItemSlot(&pkt.ExpectedSlot) @TODO 1.5.1
 
     if clickedWindow != nil {
         txState = clickedWindow.Click(&click)

@@ -121,13 +121,13 @@ func (mob *Mob) UpdatePackets(pkts []proto.IPacket) []proto.IPacket {
 
 func (mob *Mob) SpawnPackets(pkts []proto.IPacket) []proto.IPacket {
     pkts = append(pkts,
-        &proto.PacketMobSpawn{
-            EntityId: mob.EntityId,
-            MobType:  mob.mobType,
-            Position: mob.PointObject.LastSentPosition,
-            Look:     mob.look.ToLookBytes(),
-            Metadata: mob.FormatMetadata(),
-        },
+        // &proto.PacketMobSpawn{ @TODO 1.5.1
+        //     EntityId: mob.EntityId,
+        //     MobType:  mob.mobType,
+        //     Position: mob.PointObject.LastSentPosition,
+        //     Look:     mob.look.ToLookBytes(),
+        //     Metadata: mob.FormatMetadata(),
+        // },
         &proto.PacketEntityVelocity{
             EntityId: mob.EntityId,
             Velocity: mob.PointObject.LastSentVelocity,

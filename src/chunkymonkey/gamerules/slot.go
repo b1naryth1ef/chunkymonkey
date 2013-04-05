@@ -118,11 +118,15 @@ func (s *Slot) UpdatePacket(windowId WindowId, slotIndex SlotId) *proto.PacketWi
 }
 
 func (s *Slot) EquipmentUpdatePacket(entityId EntityId, slotId SlotId) *proto.PacketEntityEquipment {
-    return &proto.PacketEntityEquipment{
-        EntityId:   entityId,
-        Slot:       slotId,
+    sid := proto.ItemSlot{
         ItemTypeId: s.ItemTypeId,
+        Count:      s.Count,
         Data:       s.Data,
+    }
+    return &proto.PacketEntityEquipment{
+        EntityId: entityId,
+        Slot:     slotId,
+        Item:     sid,
     }
 }
 

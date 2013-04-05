@@ -80,14 +80,14 @@ func (item *Item) GetSlot() *Slot {
 
 func (item *Item) SpawnPackets(pkts []proto.IPacket) []proto.IPacket {
     return append(pkts,
-        &proto.PacketItemSpawn{
-            EntityId:    item.EntityId,
-            ItemTypeId:  item.ItemTypeId,
-            Count:       item.Slot.Count,
-            Data:        item.Slot.Data,
-            Position:    item.PointObject.LastSentPosition,
-            Orientation: item.orientation,
-        },
+        // &proto.PacketItemSpawn{ @TODO 1.5.1
+        //     EntityId:    item.EntityId,
+        //     ItemTypeId:  ObjTypeId(item.ItemTypeId),
+        //     Count:       item.Slot.Count,
+        //     Data:        item.Slot.Data,
+        //     Position:    item.PointObject.LastSentPosition,
+        //     Orientation: item.orientation,
+        // },
         &proto.PacketEntityVelocity{
             EntityId: item.EntityId,
             Velocity: item.PointObject.LastSentVelocity,

@@ -88,23 +88,23 @@ type PacketChatMessage struct {
 func (*PacketChatMessage) IsPacket() {}
 
 type PacketTimeUpdate struct {
+    Age  Ticks
     Time Ticks
 }
 
 func (*PacketTimeUpdate) IsPacket() {}
 
-type PacketEntityEquipment struct {
-    EntityId   EntityId
-    Slot       SlotId
-    ItemTypeId ItemTypeId
-    Data       ItemData
+type PacketEntityEquipment struct { //@TODO 1.5.1 check
+    EntityId EntityId
+    Slot     SlotId
+    Item     ItemSlot
 }
 
 func (*PacketEntityEquipment) IsPacket() {}
 
 type PacketSpawnPosition struct {
     X   BlockCoord
-    Y   int32
+    Y   BlockYCoord
     Z   BlockCoord
 }
 
@@ -131,7 +131,6 @@ type PacketRespawn struct {
     Difficulty  GameDifficulty
     GameType    GameType
     WorldHeight int16
-    MapSeed     RandomSeed
     LevelType   string
 }
 
@@ -201,21 +200,22 @@ func (pkt *PacketPlayerPositionLook) SetPosition(position AbsXyz, fromClient boo
     }
 }
 
-type PacketPlayerBlockHit struct {
+type PacketPlayerDigging struct {
     Status DigStatus
     Block  BlockXyz
     Face   Face
 }
 
-func (*PacketPlayerBlockHit) IsPacket() {}
+func (*PacketPlayerDigging) IsPacket() {}
 
-type PacketPlayerBlockInteract struct {
-    Block BlockXyz
-    Face  Face
-    Tool  ItemSlot
+type PacketPlayerBlockPlacement struct { //@TODO 1.5.1 check
+    Block  BlockXyz
+    Face   Face
+    Tool   ItemSlot
+    Cursor BlockPos
 }
 
-func (*PacketPlayerBlockInteract) IsPacket() {}
+func (*PacketPlayerBlockPlacement) IsPacket() {}
 
 type PacketPlayerHoldingChange struct {
     SlotId SlotId
@@ -245,26 +245,16 @@ type PacketEntityAction struct {
 
 func (*PacketEntityAction) IsPacket() {}
 
-type PacketNamedEntitySpawn struct {
+type PacketNamedEntitySpawn struct { //@TODO 1.5.1 check
     EntityId    EntityId
     Username    string
     Position    AbsIntXyz
     Rotation    LookBytes
     CurrentItem ItemTypeId
+    MetaData    EntityMetadataTable
 }
 
 func (*PacketNamedEntitySpawn) IsPacket() {}
-
-type PacketItemSpawn struct {
-    EntityId    EntityId
-    ItemTypeId  ItemTypeId
-    Count       ItemCount
-    Data        ItemData
-    Position    AbsIntXyz
-    Orientation OrientationBytes
-}
-
-func (*PacketItemSpawn) IsPacket() {}
 
 type PacketItemCollect struct {
     CollectedItem EntityId
@@ -277,8 +267,8 @@ type PacketObjectSpawn struct {
     EntityId EntityId
     ObjType  ObjTypeId
     Position AbsIntXyz
-    // TODO thrower ID etc.
-    Fireball FireballData
+    Rotation LookBytes
+    ObjData  ThrowerData
 }
 
 func (*PacketObjectSpawn) IsPacket() {}
@@ -287,7 +277,8 @@ type PacketMobSpawn struct {
     EntityId EntityId
     MobType  EntityMobType
     Position AbsIntXyz
-    Look     LookBytes
+    Look     MobLookBytes
+    Velocity Velocity
     Metadata EntityMetadataTable
 }
 
@@ -318,7 +309,8 @@ type PacketEntityVelocity struct {
 func (*PacketEntityVelocity) IsPacket() {}
 
 type PacketEntityDestroy struct {
-    EntityId EntityId
+    EntityCount int16
+    EntityId    EntityId
 }
 
 func (*PacketEntityDestroy) IsPacket() {}
@@ -359,6 +351,13 @@ type PacketEntityTeleport struct {
 
 func (*PacketEntityTeleport) IsPacket() {}
 
+type PacketEntityHeadLook struct {
+    EntityId EntityId
+    HeadYaw  AngleBytes
+}
+
+func (*PacketEntityHeadLook) IsPacket() {}
+
 type PacketEntityStatus struct {
     EntityId EntityId
     Status   EntityStatus
@@ -381,10 +380,10 @@ type PacketEntityMetadata struct {
 func (*PacketEntityMetadata) IsPacket() {}
 
 type PacketEntityEffect struct {
-    EntityId EntityId
-    Effect   EntityEffect
-    Value    int8
-    Duration int16
+    EntityId  EntityId
+    Effect    EntityEffect
+    Amplifier int8
+    Duration  int16
 }
 
 func (*PacketEntityEffect) IsPacket() {}
@@ -404,23 +403,22 @@ type PacketPlayerExperience struct {
 
 func (*PacketPlayerExperience) IsPacket() {}
 
-type PacketPreChunk struct {
-    ChunkLoc ChunkXz
-    Mode     ChunkLoadMode
+type PacketChunkData struct { //@CHECK 1.5.1
+    Corner   BlockXyz
+    GroundUp bool
+    Primary  int16
+    Add      int16
+    CompSize int32
+    CompData []byte
 }
 
-func (*PacketPreChunk) IsPacket() {}
-
-type PacketMapChunk struct {
-    Corner BlockXyz
-    Data   ChunkData
-}
-
-func (*PacketMapChunk) IsPacket() {}
+func (*PacketChunkData) IsPacket() {}
 
 type PacketMultiBlockChange struct {
     ChunkLoc ChunkXz
-    Changes  MultiBlockChanges
+    Count    int16
+    Size     int32
+    Data     []byte
 }
 
 func (*PacketMultiBlockChange) IsPacket() {}
@@ -428,7 +426,7 @@ func (*PacketMultiBlockChange) IsPacket() {}
 type PacketBlockChange struct {
     Block     BlockXyz
     TypeId    BlockId
-    BlockData byte
+    BlockData EntityMetadataTable
 }
 
 func (*PacketBlockChange) IsPacket() {}
@@ -440,25 +438,65 @@ type PacketBlockAction struct {
     Y              int16
     Z              int32
     Value1, Value2 byte
+    BlockID        int16
 }
 
 func (*PacketBlockAction) IsPacket() {}
 
-type PacketExplosion struct {
-    Center AbsXyz
-    Radius float32
-    Blocks BlocksDxyz
+type PacketBlockBreakAnimation struct {
+    EntityId EntityId
+    X        int32
+    Y        int32
+    Z        int32
+    Stage    byte
+}
+
+func (*PacketBlockBreakAnimation) IsPacket() {}
+
+type PacketMapChunkBulk struct { //@CHECK 1.5.1
+    Count    int16
+    Length   int32
+    SkyLight bool
+    Data     []byte
+    Meta     ChunkData //@CHECK
+}
+
+func (*PacketMapChunkBulk) IsPacket() {}
+
+type PacketExplosion struct { //@CHECK 1.5.1
+    Center       AbsXyz
+    Radius       float32
+    Blocks       BlocksDxyz
+    PlayerMotion FloatComb
 }
 
 func (*PacketExplosion) IsPacket() {}
 
 type PacketSoundEffect struct {
-    Effect SoundEffect
+    Effect Effect
     Block  BlockXyz
     Data   int32
+    RelVol bool
 }
 
 func (*PacketSoundEffect) IsPacket() {}
+
+type PacketNamedSoundEffect struct {
+    Name   string
+    Pos    FloatComb
+    Volume float32
+    Pitch  byte
+}
+
+func (*PacketNamedSoundEffect) IsPacket() {}
+
+type PacketParticle struct {
+    Name   string
+    Pos    FloatComb
+    Offset FloatComb
+    Speed  float32
+    Number int32
+}
 
 type PacketState struct {
     Reason   byte
@@ -491,12 +529,12 @@ type PacketWindowClose struct {
 func (*PacketWindowClose) IsPacket() {}
 
 type PacketWindowClick struct {
-    WindowId     WindowId
-    Slot         SlotId
-    RightClick   bool
-    TxId         TxId
-    Shift        bool
-    ExpectedSlot ItemSlot
+    WindowId    WindowId
+    Slot        SlotId
+    RightClick  byte
+    TxId        TxId
+    Mode        byte
+    ClickedItem ItemSlot
 }
 
 func (*PacketWindowClick) IsPacket() {}
@@ -509,9 +547,10 @@ type PacketWindowSetSlot struct {
 
 func (*PacketWindowSetSlot) IsPacket() {}
 
-type PacketWindowItems struct {
+type PacketWindowItems struct { //@CHECK 1.5.1 @TODO
     WindowId WindowId
-    Slots    ItemSlotSlice
+    Count    int16
+    Slots    []ItemSlot
 }
 
 func (*PacketWindowItems) IsPacket() {}
@@ -560,11 +599,19 @@ func (*PacketSignUpdate) IsPacket() {}
 
 type PacketItemData struct {
     ItemTypeId ItemTypeId
-    MapId      ItemData
-    MapData    MapData
+    ItemId     int16
+    Text       string
 }
 
 func (*PacketItemData) IsPacket() {}
+
+type PacketUpdateTileEntity struct { //@TODO unmarshal
+    X      int32
+    Y      int16
+    Z      int32
+    Action byte
+    Data   []byte
+}
 
 type PacketIncrementStatistic struct {
     StatisticId StatisticId
@@ -806,15 +853,15 @@ func (slots *ItemSlotSlice) MinecraftMarshal(writer io.Writer, ps *PacketSeriali
     return
 }
 
-// FireballData implements IMarshaler.
-var assertFireballData = IMarshaler(&FireballData{})
+// ThrowerData implements IMarshaler.
+var assertThrowerData = IMarshaler(&ThrowerData{})
 
-type FireballData struct {
+type ThrowerData struct {
     ThrowerId EntityId
     X, Y, Z   int16
 }
 
-func (fd *FireballData) MinecraftUnmarshal(reader io.Reader, ps *PacketSerializer) error {
+func (fd *ThrowerData) MinecraftUnmarshal(reader io.Reader, ps *PacketSerializer) error {
     throwerId, err := ps.readUint32(reader)
     if err != nil {
         return err
@@ -843,7 +890,7 @@ func (fd *FireballData) MinecraftUnmarshal(reader io.Reader, ps *PacketSerialize
     return nil
 }
 
-func (fd *FireballData) MinecraftMarshal(writer io.Writer, ps *PacketSerializer) error {
+func (fd *ThrowerData) MinecraftMarshal(writer io.Writer, ps *PacketSerializer) error {
     err := ps.writeUint32(writer, uint32(fd.ThrowerId))
     if err != nil {
         return err
@@ -941,6 +988,10 @@ func (cd *ChunkData) MinecraftMarshal(writer io.Writer, ps *PacketSerializer) (e
 
     numBlocks := (int(cd.Size.X) + 1) * (int(cd.Size.Y) + 1) * (int(cd.Size.Z) + 1)
     numNibbles := numBlocks >> 1
+    log.Printf("%s, %s", len(cd.Blocks), numBlocks)
+    log.Printf("%s, %s", len(cd.BlockData), numNibbles)
+    log.Printf("%s, %s", len(cd.BlockLight), numNibbles)
+    log.Printf("%s, %s", len(cd.SkyLight), numNibbles)
     if len(cd.Blocks) != numBlocks || len(cd.BlockData) != numNibbles || len(cd.BlockLight) != numNibbles || len(cd.SkyLight) != numNibbles {
         return ErrorBadChunkDataSize
     }

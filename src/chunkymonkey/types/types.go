@@ -67,6 +67,8 @@ type FoodUnits int16
 // Item type ID
 type ItemTypeId int16
 
+//type ItemSlot []byte
+
 // ToBlockId returns the ItemTypeId as a BlockId, or 0, ok=false if it's not a
 // valid BlockId.
 func (id ItemTypeId) ToBlockId() (blockId BlockId, ok bool) {
@@ -161,10 +163,13 @@ var MobNameByType = map[EntityMobType]string{}
 type EntityStatus byte
 
 const (
-    EntityStatusHurt     = EntityStatus(2)
-    EntityStatusDead     = EntityStatus(3)
-    EntityStatusUnknown1 = EntityStatus(4)
-    EntityStatusUnknown2 = EntityStatus(5)
+    EntityStatusHurt           = EntityStatus(2)
+    EntityStatusDead           = EntityStatus(3)
+    EntityStatusWolfTaming     = EntityStatus(6)
+    EntityStatusWolfTamed      = EntityStatus(7)
+    EntityStatusWolfShake      = EntityStatus(8)
+    EntityStatusEatingAccepted = EntityStatus(9)
+    EntityStatusSheepEatGrass  = EntityStatus(10)
 )
 
 type EntityAnimation byte
@@ -284,18 +289,42 @@ const (
     NotePitchMax = NotePitch(24)
 )
 
-// SoundEffect is an enumeration of sound effects.
-type SoundEffect int32
+// Effect is an enumeration of sound and particle effects
+type Effect int32
 
 const (
-    SoundEffectClick2     = SoundEffect(1000)
-    SoundEffectClick1     = SoundEffect(1001)
-    SoundEffectBowFire    = SoundEffect(1002)
-    SoundEffectDoor       = SoundEffect(1003)
-    SoundEffectExtinguish = SoundEffect(1004)
-    SoundEffectRecordPlay = SoundEffect(1005)
-    SoundEffectSmoke      = SoundEffect(2000)
-    SoundEffectBlockBreak = SoundEffect(2001)
+    SoundEffectClick           = Effect(1000)
+    SoundEffectClick1          = Effect(1001)
+    SoundEffectBowFire         = Effect(1002)
+    SoundEffectDoor            = Effect(1003)
+    SoundEffectExtinguish      = Effect(1004)
+    SoundEffectRecordPlay      = Effect(1005)
+    SoundEffectGhastCharge     = Effect(1007)
+    SoundEffectGhastFireball   = Effect(1008)
+    SoundEffectZombieWood      = Effect(1010)
+    SoundEffectZombieMetal     = Effect(1011)
+    SoundEffectZombieWoodBreak = Effect(1012)
+    SoundEffectWitherSpawn     = Effect(1012)
+    ParticleEffectSmoke        = Effect(2000)
+    ParticleEffectBlockBreak   = Effect(2001)
+    ParticleEffectSplashPotion = Effect(2002)
+    ParticleEffectEyeOfEnder   = Effect(2003)
+    ParticleEffectMobSpawn     = Effect(2004)
+)
+
+// Smoke Direction
+type SmokeDirection int8
+
+const (
+    SmokeSouthEast = SmokeDirection(0)
+    SmokeSouth     = SmokeDirection(1)
+    SmokeSouthWest = SmokeDirection(2)
+    SmokeEast      = SmokeDirection(3)
+    SmokeMiddle    = SmokeDirection(4)
+    SmokeWest      = SmokeDirection(5)
+    SmokeNorthEast = SmokeDirection(6)
+    SmokeNorth     = SmokeDirection(7)
+    SmokeNorthWest = SmokeDirection(8)
 )
 
 // Block-related types
@@ -439,6 +468,11 @@ const (
 
 // Movement-related types and constants
 
+// PlayerMotion
+type FloatComb struct {
+    X, Y, Z float32
+}
+
 // VelocityComponent in VelocityComponentBlocksPerTick
 type VelocityComponent int16
 
@@ -495,6 +529,11 @@ const (
 // An angle, where there are 256 units in a circle.
 type AngleBytes byte
 
+// Postion on block
+type BlockPos struct {
+    CX, CY, CZ AngleBytes
+}
+
 // An angle in degrees
 type AngleDegrees float32
 
@@ -520,6 +559,10 @@ func (l *LookDegrees) ToLookBytes() LookBytes {
 
 type LookBytes struct {
     Yaw, Pitch AngleBytes
+}
+
+type MobLookBytes struct {
+    Yaw, HeadPitch, Pitch AngleBytes
 }
 
 type OrientationDegrees struct {
