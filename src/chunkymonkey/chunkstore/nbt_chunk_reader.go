@@ -14,6 +14,18 @@ type nbtChunkReader struct {
     chunkTag nbt.ITag
 }
 
+// Combine arrays
+func combineArray(arr1, arr2 []byte) []byte {
+    n := len(arr1) + len(arr2)
+    if n > cap(arr1) {
+        newSlice := make([]byte, (n+1)*2)
+        copy(newSlice, arr1)
+        arr1 = newSlice
+    }
+    copy(arr1[len(arr1):n], arr2)
+    return arr1
+}
+
 // Load a chunk from its NBT representation
 func newNbtChunkReader(reader io.Reader) (r *nbtChunkReader, err error) {
     chunkTag, err := nbt.Read(reader)
@@ -28,31 +40,86 @@ func newNbtChunkReader(reader io.Reader) (r *nbtChunkReader, err error) {
     return
 }
 
-func (r *nbtChunkReader) ChunkLoc() ChunkXz {
+func (r *nbtChunkReader) ChunkLoc() ChunkXz { //@FIXME
+    _, ok := r.chunkTag.Lookup("Level/zPos").(*nbt.Int)
+    if !ok {
+        log.Panicln("Invalid Level Format!")
+    }
     return ChunkXz{
         X:  ChunkCoord(r.chunkTag.Lookup("Level/xPos").(*nbt.Int).Value),
         Z:  ChunkCoord(r.chunkTag.Lookup("Level/zPos").(*nbt.Int).Value),
     }
 }
 
+func (r *nbtChunkReader) Sections() (comps []nbt.Compound) {
+    sectionsTag, ok := r.chunkTag.Lookup("Level/Sections").(*nbt.List)
+    if !ok {
+        log.Printf("Failed to load Sections %s", sectionsTag)
+        return
+    }
+
+    comps = make([]nbt.Compound, len(sectionsTag.Value))
+    for _, value := range sectionsTag.Value {
+        comp, ok := value.(nbt.Compound)
+        if !ok {
+            log.Printf("Found non-compound in sections list: %T", value)
+            continue
+        }
+
+        comps = append(comps, comp)
+    }
+
+    return comps
+}
+
 func (r *nbtChunkReader) Blocks() []byte {
-    return r.chunkTag.Lookup("Level/Blocks").(*nbt.ByteArray).Value
+    secs := r.Sections()
+    res := make([]byte, 4096)
+
+    for _, value := range secs {
+        v := value.Lookup("Blocks").(*nbt.ByteArray).Value
+        log.Printf("%s", v)
+        res = combineArray(res, v)
+    }
+
+    return res
 }
 
 func (r *nbtChunkReader) BlockData() []byte {
-    return r.chunkTag.Lookup("Level/Data").(*nbt.ByteArray).Value
+    secs := r.Sections()
+    res := make([]byte, 4096*len(secs))
+
+    for _, value := range secs {
+        copy(res, value.Lookup("BlockData").(*nbt.ByteArray).Value)
+    }
+
+    return res
 }
 
 func (r *nbtChunkReader) BlockLight() []byte {
-    return r.chunkTag.Lookup("Level/BlockLight").(*nbt.ByteArray).Value
+    secs := r.Sections()
+    res := make([]byte, 4096*len(secs))
+
+    for _, value := range secs {
+        copy(res, value.Lookup("BlockLight").(*nbt.ByteArray).Value)
+    }
+
+    return res
 }
 
 func (r *nbtChunkReader) SkyLight() []byte {
-    return r.chunkTag.Lookup("Level/SkyLight").(*nbt.ByteArray).Value
+    secs := r.Sections()
+    res := make([]byte, 4096*len(secs))
+
+    for _, value := range secs {
+        copy(res, value.Lookup("SkyLight").(*nbt.ByteArray).Value)
+    }
+
+    return res
 }
 
-func (r *nbtChunkReader) HeightMap() []byte {
-    return r.chunkTag.Lookup("Level/HeightMap").(*nbt.ByteArray).Value
+func (r *nbtChunkReader) HeightMap() []int { //@TODO i r nub
+    return make([]int, 1024)
 }
 
 func (r *nbtChunkReader) Entities() (entities []gamerules.INonPlayerEntity) {

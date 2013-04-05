@@ -667,8 +667,8 @@ func (player *Player) mainLoop() {
     defer expVarPlayerDisconnectionCount.Add(1)
 
     //@TODO Waiting on Anvil format
-    //player.chunkSubs.Init(player)
-    //defer player.chunkSubs.Close()
+    player.chunkSubs.Init(player)
+    defer player.chunkSubs.Close()
 
     // Start the keep-alive/latency pings.
     player.pingNew()

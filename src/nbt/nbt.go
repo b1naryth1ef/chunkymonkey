@@ -29,6 +29,7 @@
 package nbt
 
 import (
+    "bytes"
     "encoding/binary"
     "errors"
     "fmt"
@@ -89,8 +90,8 @@ func (tt TagType) NewTag() (tag ITag, err error) {
         tag = new(List)
     case TagCompound:
         tag = make(Compound)
-    case TagIntArray:
-        tag = new(IntArray)
+    //case TagIntArray: // @TODO
+    //    tag = new(IntArray)
     default:
         err = fmt.Errorf("invalid NBT tag type %#x", tt)
     }
@@ -478,7 +479,7 @@ func (c Compound) Read(reader io.Reader) (err error) {
     return
 }
 
-type IntArray struct {
+type IntArray struct { //@TODO This doesnt work, I'm a newb clearly
     Value []int
 }
 
@@ -505,8 +506,11 @@ func (i *IntArray) Read(reader io.Reader) (err error) {
     }
 
     ns := make([]int, length.Value)
-    for v := range bs {
-        ns = append(ns, int(v))
+    for _, v := range bs {
+        i := new(Int)
+        b := []byte{v}
+        i.Read(bytes.NewReader(b))
+        ns = append(ns, int(i.Value))
     }
 
     i.Value = ns
@@ -521,7 +525,7 @@ func (i *IntArray) Write(writer io.Writer) (err error) {
     }
 
     bs := make([]byte, length.Value)
-    for v := range i.Value {
+    for _, v := range i.Value {
         bs = append(bs, byte(v))
     }
 
