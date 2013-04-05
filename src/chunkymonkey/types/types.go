@@ -88,37 +88,60 @@ func (e *EntityId) SetEntityId(entityId EntityId) {
 type EntityMobType byte
 
 const (
-    MobTypeIdCreeper      = EntityMobType(50)
-    MobTypeIdSkeleton     = EntityMobType(51)
-    MobTypeIdSpider       = EntityMobType(52)
-    MobTypeIdGiantZombie  = EntityMobType(53)
-    MobTypeIdZombie       = EntityMobType(54)
-    MobTypeIdSlime        = EntityMobType(55)
-    MobTypeIdGhast        = EntityMobType(56)
-    MobTypeIdZombiePigman = EntityMobType(57)
-    MobTypeIdPig          = EntityMobType(90)
-    MobTypeIdSheep        = EntityMobType(91)
-    MobTypeIdCow          = EntityMobType(92)
-    MobTypeIdHen          = EntityMobType(93)
-    MobTypeIdSquid        = EntityMobType(94)
-    MobTypeIdWolf         = EntityMobType(95)
+    MobTypeIdEnderman      = EntityMobType(0)
+    MobTypeIdCreeper       = EntityMobType(50)
+    MobTypeIdSkeleton      = EntityMobType(51)
+    MobTypeIdSpider        = EntityMobType(52)
+    MobTypeIdGiantZombie   = EntityMobType(53)
+    MobTypeIdZombie        = EntityMobType(54)
+    MobTypeIdSlime         = EntityMobType(55)
+    MobTypeIdGhast         = EntityMobType(56)
+    MobTypeIdZombiePigman  = EntityMobType(57)
+    MobTypeIdBlaze         = EntityMobType(61)
+    MobTypeIdLavaSlime     = EntityMobType(62)
+    MobTypeIdEnderDragon   = EntityMobType(63)
+    MobTypeIdWitherBoss    = EntityMobType(64)
+    MobTypeIdBat           = EntityMobType(65)
+    MobTypeIdWitch         = EntityMobType(66)
+    MobTypeIdPig           = EntityMobType(90)
+    MobTypeIdSheep         = EntityMobType(91)
+    MobTypeIdCow           = EntityMobType(92)
+    MobTypeIdHen           = EntityMobType(93)
+    MobTypeIdSquid         = EntityMobType(94)
+    MobTypeIdWolf          = EntityMobType(95)
+    MobTypeIdMushroomCow   = EntityMobType(96)
+    MobTypeIdSnowMan       = EntityMobType(97)
+    MobTypeIdOzelot        = EntityMobType(98)
+    MobTypeIdVillagerGolem = EntityMobType(99)
+    MobTypeIdVillager      = EntityMobType(120)
 )
 
 var MobTypeByName = map[string]EntityMobType{
-    "Creeper":      MobTypeIdCreeper,
-    "Skeleton":     MobTypeIdSkeleton,
-    "Spider":       MobTypeIdSpider,
-    "GiantZombie":  MobTypeIdGiantZombie,
-    "Zombie":       MobTypeIdZombie,
-    "Slime":        MobTypeIdSlime,
-    "Ghast":        MobTypeIdGhast,
-    "ZombiePigman": MobTypeIdZombiePigman,
-    "Pig":          MobTypeIdPig,
-    "Sheep":        MobTypeIdSheep,
-    "Cow":          MobTypeIdCow,
-    "Hen":          MobTypeIdHen,
-    "Squid":        MobTypeIdSquid,
-    "Wolf":         MobTypeIdWolf,
+    "Creeper":       MobTypeIdCreeper,
+    "Skeleton":      MobTypeIdSkeleton,
+    "Spider":        MobTypeIdSpider,
+    "GiantZombie":   MobTypeIdGiantZombie,
+    "Zombie":        MobTypeIdZombie,
+    "Slime":         MobTypeIdSlime,
+    "Ghast":         MobTypeIdGhast,
+    "ZombiePigman":  MobTypeIdZombiePigman,
+    "Pig":           MobTypeIdPig,
+    "Sheep":         MobTypeIdSheep,
+    "Cow":           MobTypeIdCow,
+    "Hen":           MobTypeIdHen,
+    "Squid":         MobTypeIdSquid,
+    "Wolf":          MobTypeIdWolf,
+    "Blaze":         MobTypeIdBlaze,
+    "LavaSlime":     MobTypeIdLavaSlime,
+    "EnderDragon":   MobTypeIdEnderDragon,
+    "WitherBoss":    MobTypeIdWitherBoss,
+    "Bat":           MobTypeIdBat,
+    "Witch":         MobTypeIdWitch,
+    "MushroomCow":   MobTypeIdMushroomCow,
+    "SnowMan":       MobTypeIdSnowMan,
+    "Ozelot":        MobTypeIdOzelot,
+    "VillagerGolem": MobTypeIdVillagerGolem,
+    "Villager":      MobTypeIdVillager,
 }
 
 // MobNameByType reverses the MobTypeByName mapping, initialized in init().
@@ -183,33 +206,49 @@ const (
 type ObjTypeId int8
 
 const (
-    ObjTypeIdBoat           = ObjTypeId(1)
-    ObjTypeIdMinecart       = ObjTypeId(10)
-    ObjTypeIdStorageCart    = ObjTypeId(11)
-    ObjTypeIdPoweredCart    = ObjTypeId(12)
-    ObjTypeIdActivatedTnt   = ObjTypeId(50)
-    ObjTypeIdEnderCrystal   = ObjTypeId(51)
-    ObjTypeIdArrow          = ObjTypeId(60)
-    ObjTypeIdThrownSnowball = ObjTypeId(61)
-    ObjTypeIdThrownEgg      = ObjTypeId(62)
-    ObjTypeIdFallingSand    = ObjTypeId(70)
-    ObjTypeIdFallingGravel  = ObjTypeId(71)
-    ObjTypeIdFishingFloat   = ObjTypeId(90)
+    ObjTypeIdBoat                  = ObjTypeId(1)
+    ObjTypeIdMinecart              = ObjTypeId(10)
+    ObjTypeIdStorageCart           = ObjTypeId(11)
+    ObjTypeIdPoweredCart           = ObjTypeId(12)
+    ObjTypeIdActivatedTnt          = ObjTypeId(50)
+    ObjTypeIdEnderCrystal          = ObjTypeId(51)
+    ObjTypeIdArrow                 = ObjTypeId(60)
+    ObjTypeIdThrownSnowball        = ObjTypeId(61)
+    ObjTypeIdThrownEgg             = ObjTypeId(62)
+    ObjTypeIdFireball              = ObjTypeId(63)
+    ObjTypeIdSmallFireball         = ObjTypeId(64)
+    ObjTypeIdThrownEnderPearl      = ObjTypeId(65)
+    ObjTypeIdWitherSkull           = ObjTypeId(66)
+    ObjTypeIdFallingSand           = ObjTypeId(70)
+    ObjTypeIdItemFrame             = ObjTypeId(71)
+    ObjTypeIdEyeOfEnderSignal      = ObjTypeId(72)
+    ObjTypeIdThrownPotion          = ObjTypeId(73)
+    ObjTypeIdThrownExpBottle       = ObjTypeId(75)
+    ObjTypeIdFireworksRocketEntity = ObjTypeId(76)
+    ObjTypeIdFishingFloat          = ObjTypeId(90)
 )
 
 var ObjTypeByName = map[string]ObjTypeId{
-    "Boat":           ObjTypeIdBoat,
-    "Minecart":       ObjTypeIdMinecart,
-    "StorageCart":    ObjTypeIdStorageCart,
-    "PoweredCart":    ObjTypeIdPoweredCart,
-    "ActivatedTnt":   ObjTypeIdActivatedTnt,
-    "EnderCrystal":   ObjTypeIdEnderCrystal,
-    "Arrow":          ObjTypeIdArrow,
-    "ThrownSnowball": ObjTypeIdThrownSnowball,
-    "ThrownEgg":      ObjTypeIdThrownEgg,
-    "FallingSand":    ObjTypeIdFallingSand,
-    "FallingGravel":  ObjTypeIdFallingGravel,
-    "FishingFloat":   ObjTypeIdFishingFloat,
+    "Boat":                  ObjTypeIdBoat,
+    "Minecart":              ObjTypeIdMinecart,
+    "StorageCart":           ObjTypeIdStorageCart,
+    "PoweredCart":           ObjTypeIdPoweredCart,
+    "ActivatedTnt":          ObjTypeIdActivatedTnt,
+    "EnderCrystal":          ObjTypeIdEnderCrystal,
+    "Arrow":                 ObjTypeIdArrow,
+    "ThrownSnowball":        ObjTypeIdThrownSnowball,
+    "ThrownEgg":             ObjTypeIdThrownEgg,
+    "FallingSand":           ObjTypeIdFallingSand,
+    "FishingFloat":          ObjTypeIdFishingFloat,
+    "Fireball":              ObjTypeIdFireball,
+    "SmallFireball":         ObjTypeIdSmallFireball,
+    "ThrownEnderPearl":      ObjTypeIdThrownEnderPearl,
+    "WitherSkull":           ObjTypeIdWitherSkull,
+    "ItemFrame":             ObjTypeIdItemFrame,
+    "EyeOfEnderSignal":      ObjTypeIdEyeOfEnderSignal,
+    "ThrownPotion":          ObjTypeIdThrownPotion,
+    "ThrownExpBottle":       ObjTypeIdThrownExpBottle,
+    "FireworksRocketEntity": ObjTypeIdFireworksRocketEntity,
 }
 
 // ObjNameByType reverses ObjTypeByName (initialized in init()).
