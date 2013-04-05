@@ -118,8 +118,8 @@ func (r *nbtChunkReader) SkyLight() []byte {
     return res
 }
 
-func (r *nbtChunkReader) HeightMap() []int {
-    return r.chunkTag.Lookup("Level/HeightMap").(*nbt.IntArray).Value
+func (r *nbtChunkReader) HeightMap() []int { //@TODO i r nub
+    return make([]int, 1024)
 }
 
 func (r *nbtChunkReader) Entities() (entities []gamerules.INonPlayerEntity) {
