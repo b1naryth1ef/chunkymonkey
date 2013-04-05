@@ -20,13 +20,13 @@ const (
     chunkCompressionZlib = 2
 )
 
-type chunkStoreBeta struct {
+type chunkStoreAnvil struct {
     regionPath  string
     regionFiles map[uint64]*regionFile
 }
 
-func newChunkStoreAnvil(worldPath string, dimension DimensionId) (s *chunkStoreBeta, err error) {
-    s = &chunkStoreBeta{
+func newChunkStoreAnvil(worldPath string, dimension DimensionId) (s *chunkStoreAnvil, err error) {
+    s = &chunkStoreAnvil{
         regionFiles: make(map[uint64]*regionFile),
     }
 
@@ -43,7 +43,7 @@ func newChunkStoreAnvil(worldPath string, dimension DimensionId) (s *chunkStoreB
     return
 }
 
-func (s *chunkStoreBeta) regionFile(chunkLoc ChunkXz) (rf *regionFile, err error) {
+func (s *chunkStoreAnvil) regionFile(chunkLoc ChunkXz) (rf *regionFile, err error) {
     regionLoc := regionLocForChunkXz(chunkLoc)
 
     rf, ok := s.regionFiles[regionLoc.regionKey()]
@@ -67,7 +67,7 @@ func (s *chunkStoreBeta) regionFile(chunkLoc ChunkXz) (rf *regionFile, err error
     return rf, nil
 }
 
-func (s *chunkStoreBeta) ReadChunk(chunkLoc ChunkXz) (reader IChunkReader, err error) {
+func (s *chunkStoreAnvil) ReadChunk(chunkLoc ChunkXz) (reader IChunkReader, err error) {
     rf, err := s.regionFile(chunkLoc)
     if err != nil {
         return
@@ -81,15 +81,15 @@ func (s *chunkStoreBeta) ReadChunk(chunkLoc ChunkXz) (reader IChunkReader, err e
     return
 }
 
-func (s *chunkStoreBeta) SupportsWrite() bool {
+func (s *chunkStoreAnvil) SupportsWrite() bool {
     return true
 }
 
-func (s *chunkStoreBeta) Writer() IChunkWriter {
+func (s *chunkStoreAnvil) Writer() IChunkWriter {
     return newNbtChunkWriter()
 }
 
-func (s *chunkStoreBeta) WriteChunk(writer IChunkWriter) error {
+func (s *chunkStoreAnvil) WriteChunk(writer IChunkWriter) error {
     nbtWriter, ok := writer.(*nbtChunkWriter)
     if !ok {
         return fmt.Errorf("%T is incorrect IChunkWriter implementation for %T", writer, s)
